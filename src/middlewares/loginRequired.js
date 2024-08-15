@@ -13,16 +13,16 @@ exports.loginRequired = async (req, res, next) => {
   const [, token] = authorization.split(' ');
 
   try {
-    const { id, email } = jwt.verify(token, process.env.TOKEN_SECRET);
+    const { id } = jwt.verify(token, process.env.TOKEN_SECRET);
 
-    const user = await LoginModel.findOne({ _id: id, email: email });
+    const user = await LoginModel.findOne({ _id: id });
 
     if (!user) {
       return res.status(401).json('Usuario inválido');
     }
 
     req.userId = id;
-    req.userEmail = email;
+    req.userEmail = user.email;
     req.userName = user.name;
     next();
   } catch (err) {

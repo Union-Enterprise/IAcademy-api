@@ -39,7 +39,7 @@ class User{
       if(!this.body.name) this.errors.push('Insira um nome valido.');
     }
     if(!validator.isEmail(this.body.email)) this.errors.push('Insira um e-mail valido.');
-    if(this.body.password.length <= 5 || this.body.password.length > 100) this.errors.push('Insira uma senha entre 6 e 100 caracteres.');
+    if(this.body.password.length <= 5) this.errors.push('Insira uma senha com mais de 6 caracteres');
   }
   
   async userAlreadyRegistered(){
@@ -68,7 +68,53 @@ class User{
   }
 
   async delete(){
-    const user = LoginModel.findOneAndDelete({ _id: this.body.id, email: this.body.email, name: this.body.name })
+    const user = await LoginModel.findOneAndDelete({ _id: this.body.id, email: this.body.email, name: this.body.name })
+
+    return user;
+  }
+
+  async updateName(){
+    if(!this.body.name){
+      this.errors.push("Insira um nome válido");
+      return;
+    }
+    let user = await LoginModel.findOneAndUpdate({ _id: this.body.id }, { name: this.body.name })
+    user = await LoginModel.findOne({ _id: this.body.id }, ["name", "email"]);
+
+    return user;
+  }
+
+  async updateEmail(){
+    if(!validator.isEmail(this.body.email)){
+      this.errors.push("Insira um email válido");
+      return;
+    }
+
+    if(await this.userAlreadyRegistered(this.body)){
+      this.errors.push("Esse email já está em uso");
+      return;
+    }
+
+    let user = await LoginModel.findOneAndUpdate({ _id: this.body.id }, { email: this.body.email })
+    user = await LoginModel.findOne({ _id: this.body.id }, ["name", "email"]);
+
+    return user;
+  }
+
+  async updatePassword(){
+    if(!this.body.password){
+      this.errors.push("Insira um senha válida");
+      return;
+    }
+    if(this.body.password.length <= 5){
+      this.errors.push('Insira uma senha com mais de 6 caracteres');
+      return;
+    }
+
+    const salt = bcrypt.genSaltSync();
+    this.body.password = bcrypt.hashSync(this.body.password, salt);
+    let user = await LoginModel.findOneAndUpdate({ _id: this.body.id }, { password: this.body.password })
+    user = await LoginModel.findOne({ _id: this.body.id }, ["name", "email"]);
 
     return user;
   }

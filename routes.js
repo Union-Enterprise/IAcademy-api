@@ -1,14 +1,18 @@
 const route = require('express').Router()
 
-const account = require('./src/controllers/account')
-const loginRequired = require("./src/middlewares/loginRequired")
+const { login, register, del, updateName, updateEmail, updatePassword } = require('./src/controllers/account')
+const { loginRequired } = require("./src/middlewares/loginRequired")
 
 route.get('/', (req, res) => {
     res.json('oi');
 })
 
-route.post('/login', account.login);
-route.post('/signup', account.register);
-route.delete('/delete', loginRequired.loginRequired, account.delete);
+route.post('/login', login);
+route.post('/signup', register);
+route.delete('/delete', loginRequired, del);
+route.put('/update_name', loginRequired, updateName);
+route.put('/update_email', loginRequired, updateEmail);
+route.put('/update_password', loginRequired, updatePassword);
+
 
 module.exports = route;
