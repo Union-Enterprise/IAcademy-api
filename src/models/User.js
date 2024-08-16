@@ -152,6 +152,13 @@ class User{
 
     return user;
   }
+
+  async updateIMG(){
+    let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { img: this.body.img })
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "cpf", "links", "is_premium"]);
+
+    return user;
+  }
 }
 
 module.exports = { User, UserModel };

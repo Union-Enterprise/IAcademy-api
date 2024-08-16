@@ -130,4 +130,26 @@ exports.updateCPF = async (req, res) => {
         })
     }
 }
+
+exports.updateIMG = async (req, res) => {
+    try{
+        const user = new User({ id: req.userId, img: req.file.filename })
+
+        const userUpdated = await user.updateIMG();
+
+        if(user.errors.length > 0){
+            return res.json(user.errors);
+        }
+        
+        res.json({
+            message: "Imagem alterada com sucesso.",
+            user: userUpdated
+        })
+    }catch(err){
+        console.log(err)
+        res.json({
+            message: "Não foi possivel definir imagem de perfil"
+        })
+    }
+}
 exports.login = login;
