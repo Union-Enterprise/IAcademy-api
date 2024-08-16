@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { LoginModel } = require('../models/User');
+const { UserModel } = require('../models/User');
 
 exports.loginRequired = async (req, res, next) => {
   const { authorization } = req.headers;
@@ -15,7 +15,7 @@ exports.loginRequired = async (req, res, next) => {
   try {
     const { id } = jwt.verify(token, process.env.TOKEN_SECRET);
 
-    const user = await LoginModel.findOne({ _id: id });
+    const user = await UserModel.findOne({ _id: id });
 
     if (!user) {
       return res.status(401).json('Usuario inválido');

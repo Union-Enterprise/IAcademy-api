@@ -2,13 +2,21 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
-const LoginSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
-  password: { type: String, required: true }
-})
+  img: { type: String, default: "" },
+  password: { type: String, required: true },
+  cpf: { type: String, default: "" },
+  links: {
+    type: Map,
+    of: String,
+    default: {}
+  },
+  is_premium: { type: Boolean, default: false },
+}, { timestamps: true })
 
-const LoginModel = mongoose.model('Login', LoginSchema);
+const UserModel = mongoose.model('User', UserSchema);
 
 class User{
   constructor(body){
@@ -29,7 +37,7 @@ class User{
     const salt = bcrypt.genSaltSync();
     this.body.password = bcrypt.hashSync(this.body.password, salt);
     
-    this.user = await LoginModel.create(this.body);
+    this.user = await UserModel.create(this.body);
     return this.user;
   }
 
@@ -42,7 +50,7 @@ class User{
   }
   
   async userAlreadyRegistered(){
-    return await LoginModel.findOne({ email: this.body.email });
+    return await UserModel.findOne({ email: this.body.email });
   }
 
   async login(type){
@@ -50,7 +58,7 @@ class User{
     
     if(this.errors.length > 0) return;
 
-    this.user = await LoginModel.findOne({ email: this.body.email });
+    this.user = await UserModel.findOne({ email: this.body.email });
 
     if(!this.user){
       this.errors.push('O e-mail ou a senha está incorreto.');
@@ -67,7 +75,7 @@ class User{
   }
 
   async delete(){
-    const user = await LoginModel.findOneAndDelete({ _id: this.body.id, email: this.body.email, name: this.body.name })
+    const user = await UserModel.findOneAndDelete({ _id: this.body.id, email: this.body.email, name: this.body.name }, ["name", "email", "img", "links", "is_premium"])
 
     return user;
   }
@@ -77,8 +85,8 @@ class User{
       this.errors.push("Insira um nome válido");
       return;
     }
-    let user = await LoginModel.findOneAndUpdate({ _id: this.body.id }, { name: this.body.name })
-    user = await LoginModel.findOne({ _id: this.body.id }, ["name", "email"]);
+    let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { name: this.body.name })
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "links", "is_premium"]);
 
     return user;
   }
@@ -94,8 +102,8 @@ class User{
       return;
     }
 
-    let user = await LoginModel.findOneAndUpdate({ _id: this.body.id }, { email: this.body.email })
-    user = await LoginModel.findOne({ _id: this.body.id }, ["name", "email"]);
+    let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { email: this.body.email })
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "links", "is_premium"]);
 
     return user;
   }
@@ -112,11 +120,11 @@ class User{
 
     const salt = bcrypt.genSaltSync();
     this.body.password = bcrypt.hashSync(this.body.password, salt);
-    let user = await LoginModel.findOneAndUpdate({ _id: this.body.id }, { password: this.body.password })
-    user = await LoginModel.findOne({ _id: this.body.id }, ["name", "email"]);
+    let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { password: this.body.password })
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "links", "is_premium"]);
 
     return user;
   }
 }
 
-module.exports = { User, LoginModel };
+module.exports = { User, UserModel };

@@ -10,12 +10,12 @@ const login = async (req, res) => {
         return res.json(login.errors)
     }
 
-    const { id, name, email } = user;
+    const { id, name, email, img, links, is_premium } = user;
     const token = jwt.sign({ id }, process.env.TOKEN_SECRET, {
         expiresIn: process.env.TOKEN_EXPIRATION
     })
 
-    return res.json({ id, name, email, token })
+    return res.json({ id, name, email, img, links, is_premium, token })
 }
 
 exports.register = async (req, res) => {
