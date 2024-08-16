@@ -2,11 +2,13 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
+const { validarCPF } = require('../modules/cpfVerify');
+
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   img: { type: String, default: "" },
-  password: { type: String, required: true },
+  password: { type: String, required: true},
   cpf: { type: String, default: "" },
   links: {
     type: Map,
@@ -23,6 +25,18 @@ class User{
     this.body = body;
     this.errors = [];
     this.user = null;
+  }
+
+  passwordCheck(){
+    const lower = /[a-z]/.test(this.body.password);
+    const upper = /[A-Z]/.test(this.body.password);
+    const number = /\d/.test(this.body.password);
+
+    if(this.body.password.length <= 7 || !lower || !upper || !number) {
+      this.errors.push('Insira uma senha com mais de 8 caracteres, entre eles letras minúsculas, maiúsculas e números');
+      return false
+    }
+    
   }
 
   async register(){
@@ -46,13 +60,7 @@ class User{
       if(!this.body.name) this.errors.push('Insira um nome valido.');
     }
     if(!validator.isEmail(this.body.email)) this.errors.push('Insira um e-mail valido.');
-    const lower = /[a-z]/.test(this.body.password);
-    const upper = /[A-Z]/.test(this.body.password);
-    const number = /\d/.test(this.body.password);
-
-    if(this.body.password.length <= 7 || !lower || !upper || !number) {
-      this.errors.push('Insira uma senha com mais de 8 caracteres, entre eles letras minúsculas, maiúsculas e números');
-    }
+    this.passwordCheck()
   }
   
   async userAlreadyRegistered(){
@@ -81,7 +89,7 @@ class User{
   }
 
   async delete(){
-    const user = await UserModel.findOneAndDelete({ _id: this.body.id, email: this.body.email, name: this.body.name }, ["name", "email", "img", "links", "is_premium"])
+    const user = await UserModel.findOneAndDelete({ _id: this.body.id, email: this.body.email, name: this.body.name }, ["name", "email", "img", "cpf", "links", "is_premium"])
 
     return user;
   }
@@ -92,7 +100,7 @@ class User{
       return;
     }
     let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { name: this.body.name })
-    user = await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "links", "is_premium"]);
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "cpf", "links", "is_premium"]);
 
     return user;
   }
@@ -109,7 +117,7 @@ class User{
     }
 
     let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { email: this.body.email })
-    user = await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "links", "is_premium"]);
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "cpf", "links", "is_premium"]);
 
     return user;
   }
@@ -119,15 +127,28 @@ class User{
       this.errors.push("Insira um senha válida");
       return;
     }
-    if(this.body.password.length <= 7 || !lower || !upper || !number) {
-      this.errors.push('Insira uma senha com mais de 8 caracteres, entre eles letras minúsculas, maiúsculas e números');
-      return;
-    }
+    if(!this.passwordCheck()) return;
 
     const salt = bcrypt.genSaltSync();
     this.body.password = bcrypt.hashSync(this.body.password, salt);
     let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { password: this.body.password })
-    user = await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "links", "is_premium"]);
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "cpf", "links", "is_premium"]);
+
+    return user;
+  }
+
+  async updateCPF(){
+    let user = await UserModel.findOne({ _id: this.body.id });
+    if(user.cpf){
+      this.errors.push("CPF não pode ser alterado");
+      return;
+    }
+    if(!validarCPF(this.body.cpf)){
+      this.errors.push("Insira um cpf válido");
+      return;
+    }
+    user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { cpf: this.body.cpf })
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "cpf", "links", "is_premium"]);
 
     return user;
   }

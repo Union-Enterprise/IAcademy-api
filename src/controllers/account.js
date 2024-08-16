@@ -108,4 +108,26 @@ exports.updatePassword = async (req, res) => {
         })
     }
 }
+
+exports.updateCPF = async (req, res) => {
+    try{
+        const user = new User({ id: req.userId, cpf: req.body.cpf })
+
+        const userUpdated = await user.updateCPF();
+
+        if(user.errors.length > 0){
+            return res.json(user.errors);
+        }
+        
+        res.json({
+            message: "CPF alterado com sucesso.",
+            user: userUpdated
+        })
+    }catch(err){
+        console.log(err)
+        res.json({
+            message: "CPF não pode ser alterado"
+        })
+    }
+}
 exports.login = login;
