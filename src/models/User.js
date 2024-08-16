@@ -46,7 +46,13 @@ class User{
       if(!this.body.name) this.errors.push('Insira um nome valido.');
     }
     if(!validator.isEmail(this.body.email)) this.errors.push('Insira um e-mail valido.');
-    if(this.body.password.length <= 5) this.errors.push('Insira uma senha com mais de 6 caracteres');
+    const lower = /[a-z]/.test(this.body.password);
+    const upper = /[A-Z]/.test(this.body.password);
+    const number = /\d/.test(this.body.password);
+
+    if(this.body.password.length <= 7 || !lower || !upper || !number) {
+      this.errors.push('Insira uma senha com mais de 8 caracteres, entre eles letras minúsculas, maiúsculas e números');
+    }
   }
   
   async userAlreadyRegistered(){
