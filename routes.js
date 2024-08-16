@@ -21,4 +21,5 @@ route.put('/update_cpf', loginRequired, updateCPF);
 
 //upload
 route.post("/upload_pfp", loginRequired, upload.single('file'), updateIMG)
+
 module.exports = route;
