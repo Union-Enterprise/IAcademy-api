@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const { User } = require('../models/User');
 
-exports.login = async (req, res) => {
+const login = async (req, res) => {
     const login = new User(req.body);
     const user = await login.login();
 
@@ -15,30 +15,31 @@ exports.login = async (req, res) => {
         expiresIn: process.env.TOKEN_EXPIRATION
     })
 
-    res.json({ id, name, email, token })
+    return res.json({ id, name, email, token })
 }
 
 exports.register = async (req, res) => {
     try{    
-        const login = new User(req.body);
-        const user = await login.register();
-        if(login.errors.length > 0){
-            return res.json(login.errors);
+        const userModel = new User(req.body);
+        await userModel.register();
+        if(userModel.errors.length > 0){
+            return res.json(userModel.errors);
         }
-        res.json(user)
-      }catch(e){
+        
+        return await login(req, res);
+    }catch(e){
         console.log(e);
-      }
+    }
 }
 
 exports.del = async (req, res) => {
     try{        
         const user = new User({ id: req.userId, email: req.userEmail, name: req.userName });
-
+        
         const userDel = await user.delete()
-
+        
         console.log(userDel)
-
+        
         res.json("Usuário deletado com sucesso.")
     }catch(err){
         res.json("Usuário não pode ser deletado.")
@@ -48,13 +49,13 @@ exports.del = async (req, res) => {
 exports.updateName = async (req, res) => {
     try{        
         const user = new User({ id: req.userId, name: req.body.name });
-
+        
         const userUpdated = await user.updateName()
-
+        
         if(user.errors.length > 0){
             return res.json(user.errors);
         }
-
+        
         res.json({
             message: "Nome de usuário alterado com sucesso.",
             user: userUpdated
@@ -67,13 +68,13 @@ exports.updateName = async (req, res) => {
 exports.updateEmail = async (req, res) => {
     try{        
         const user = new User({ id: req.userId, email: req.body.email });
-
+        
         const userUpdated = await user.updateEmail()
-
+        
         if(user.errors.length > 0){
             return res.json(user.errors);
         }
-
+        
         res.json({
             message: "Email de usuário alterado com sucesso.",
             user: userUpdated
@@ -89,13 +90,13 @@ exports.updateEmail = async (req, res) => {
 exports.updatePassword = async (req, res) => {
     try{        
         const user = new User({ id: req.userId, password: req.body.password });
-
+        
         const userUpdated = await user.updatePassword()
-
+        
         if(user.errors.length > 0){
             return res.json(user.errors);
         }
-
+        
         res.json({
             message: "Senha de usuário alterada com sucesso.",
             user: userUpdated
@@ -107,3 +108,4 @@ exports.updatePassword = async (req, res) => {
         })
     }
 }
+exports.login = login;

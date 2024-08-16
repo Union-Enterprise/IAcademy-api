@@ -30,7 +30,6 @@ class User{
     this.body.password = bcrypt.hashSync(this.body.password, salt);
     
     this.user = await LoginModel.create(this.body);
-    await this.login('auto');
     return this.user;
   }
 
