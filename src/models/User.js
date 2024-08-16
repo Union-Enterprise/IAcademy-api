@@ -119,8 +119,8 @@ class User{
       this.errors.push("Insira um senha válida");
       return;
     }
-    if(this.body.password.length <= 5){
-      this.errors.push('Insira uma senha com mais de 6 caracteres');
+    if(this.body.password.length <= 7 || !lower || !upper || !number) {
+      this.errors.push('Insira uma senha com mais de 8 caracteres, entre eles letras minúsculas, maiúsculas e números');
       return;
     }
 
