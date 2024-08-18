@@ -159,6 +159,10 @@ class User{
 
     return user;
   }
+
+  async getUser(){
+    return await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "cpf", "links", "is_premium"]);
+  }
 }
 
 module.exports = { User, UserModel };

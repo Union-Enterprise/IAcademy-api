@@ -2,15 +2,13 @@ const jwt = require('jsonwebtoken');
 const { UserModel } = require('../models/User');
 
 exports.loginRequired = async (req, res, next) => {
-  const { authorization } = req.headers;
+  const token = req.cookies.token;
 
-  if (!authorization) {
+  if (!token) {
     return res.status(401).json({
       errors: ['Login necessário'],
     });
   }
-
-  const [, token] = authorization.split(' ');
 
   try {
     const { id } = jwt.verify(token, process.env.TOKEN_SECRET);
@@ -18,7 +16,7 @@ exports.loginRequired = async (req, res, next) => {
     const user = await UserModel.findOne({ _id: id });
 
     if (!user) {
-      return res.status(401).json('Usuario inválido');
+      return res.status(401).json('Usuário inválido');
     }
 
     req.userId = id;
@@ -26,9 +24,9 @@ exports.loginRequired = async (req, res, next) => {
     req.userName = user.name;
     next();
   } catch (err) {
-    console.log(err)
+    console.log(err);
     return res.status(401).json({
-      errors: ['Token expirado ou invalido'],
+      errors: ['Token expirado ou inválido'],
     });
   }
 };

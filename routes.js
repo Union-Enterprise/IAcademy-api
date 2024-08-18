@@ -1,7 +1,7 @@
 const route = require('express').Router()
 const multer = require('multer')
 
-const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG } = require('./src/controllers/account')
+const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, getUser } = require('./src/controllers/account')
 const { loginRequired } = require("./src/middlewares/loginRequired")
 const { storage } = require('./src/config/multerConfig')
 
@@ -21,5 +21,8 @@ route.put('/update_cpf', loginRequired, updateCPF);
 
 //upload
 route.post("/upload_pfp", loginRequired, upload.single('file'), updateIMG)
+
+//login necessario
+route.get("/profile", loginRequired, getUser)
 
 module.exports = route;

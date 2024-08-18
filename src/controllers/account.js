@@ -15,6 +15,13 @@ const login = async (req, res) => {
         expiresIn: process.env.TOKEN_EXPIRATION
     })
 
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'strict',
+        maxAge: 24 * 60 * 60 * 7000 
+      });
+
     return res.json({ id, name, email, img, links, is_premium, token })
 }
 
@@ -152,4 +159,24 @@ exports.updateIMG = async (req, res) => {
         })
     }
 }
+
+exports.getUser = async (req, res) => {
+    try{
+        const user = new User({ id: req.userId })
+
+        const usergetted = await user.getUser()
+
+        if(user.errors.length > 0){
+            return res.json(user.errors);
+        }
+        
+        res.json(usergetted)
+    }catch(err){
+        console.log(err)
+        res.json({
+            message: "Não foi possivel encontrar usuário"
+        })
+    }
+}
+
 exports.login = login;
