@@ -6,16 +6,36 @@ const { validarCPF } = require('../modules/cpfVerify');
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  nickname: { type: String, default: "" },
   email: { type: String, required: true },
-  img: { type: String, default: "" },
   password: { type: String, required: true},
+  nascimento: { type: Date, default: "" },
+  telefone: { type: String, default: "" },
+  img: { type: String, default: "" },
   cpf: { type: String, default: "" },
+  genero: { type: String, default: "" },
   links: {
     type: Map,
     of: String,
     default: {}
   },
   is_premium: { type: Boolean, default: false },
+  cep: { type: String, default: "" },
+  bairro: { type: String, default: "" },
+  cidade: { type: String, default: "" },
+  numero: { type: String, default: "" },
+  complemento: { type: String, default: "" },
+  estado: { type: String, default: "" },
+  cartoes: {
+    type: Map,
+    of: String,
+    default: {
+      "numero": "",
+      "nome": "", 
+      "validade": "",
+      "cvv": ""
+    }
+  }
 }, { timestamps: true })
 
 const UserModel = mongoose.model('User', UserSchema);
@@ -89,7 +109,7 @@ class User{
   }
 
   async delete(){
-    const user = await UserModel.findOneAndDelete({ _id: this.body.id, email: this.body.email, name: this.body.name }, ["name", "email", "img", "cpf", "links", "is_premium"])
+    const user = await UserModel.findOneAndDelete({ _id: this.body.id, email: this.body.email, name: this.body.name }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium"])
 
     return user;
   }
@@ -100,7 +120,7 @@ class User{
       return;
     }
     let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { name: this.body.name })
-    user = await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "cpf", "links", "is_premium"]);
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium"]);
 
     return user;
   }
@@ -117,7 +137,7 @@ class User{
     }
 
     let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { email: this.body.email })
-    user = await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "cpf", "links", "is_premium"]);
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium"]);
 
     return user;
   }
@@ -132,7 +152,7 @@ class User{
     const salt = bcrypt.genSaltSync();
     this.body.password = bcrypt.hashSync(this.body.password, salt);
     let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { password: this.body.password })
-    user = await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "cpf", "links", "is_premium"]);
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium"]);
 
     return user;
   }
@@ -148,20 +168,20 @@ class User{
       return;
     }
     user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { cpf: this.body.cpf })
-    user = await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "cpf", "links", "is_premium"]);
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium"]);
 
     return user;
   }
 
   async updateIMG(){
     let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { img: this.body.img })
-    user = await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "cpf", "links", "is_premium"]);
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium"]);
 
     return user;
   }
 
   async getUser(){
-    return await UserModel.findOne({ _id: this.body.id }, ["name", "email", "img", "cpf", "links", "is_premium"]);
+    return await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium"]);
   }
 }
 
