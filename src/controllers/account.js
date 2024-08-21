@@ -20,7 +20,7 @@ const login = async (req, res) => {
         secure: false,
         sameSite: 'strict',
         maxAge: 24 * 60 * 60 * 7000 
-      });
+    });
 
     return res.json({ id, name, email, img, links, is_premium, token })
 }
@@ -45,9 +45,9 @@ exports.del = async (req, res) => {
     try{        
         const user = new User({ id: req.userId, email: req.userEmail, name: req.userName });
         
-        const userDel = await user.delete()
-        
-        console.log(userDel)
+        await user.delete();
+    
+        res.clearCookie("token");
         
         res.json("Usuário deletado com sucesso.")
     }catch(err){
