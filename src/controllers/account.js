@@ -181,4 +181,15 @@ exports.getUser = async (req, res) => {
     }
 }
 
+exports.exit = async (req, res) => {
+    try{
+        res.clearCookie("token");
+    }catch(err){
+        console.log(err)
+        res.json({
+            message: "Não foi possivel sair"
+        })
+    }
+}
+
 exports.login = login;
