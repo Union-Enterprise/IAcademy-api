@@ -3,9 +3,11 @@ const multer = require('multer')
 
 const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, getUser, exit } = require('./src/controllers/account')
 const { loginRequired } = require("./src/middlewares/loginRequired")
-const { storage } = require('./src/config/multerConfig')
+const { storage, fileFilter } = require('./src/config/multerConfig')
 
-const upload = multer({ storage: storage })
+const upload = multer({ storage: storage, fileFilter: fileFilter, limits: {
+    fileSize: 1024 * 1024 * 25
+}});
 
 route.get('/', (req, res) => {
     res.json('oi');

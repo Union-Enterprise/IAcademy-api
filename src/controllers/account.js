@@ -142,6 +142,7 @@ exports.updateCPF = async (req, res) => {
 
 exports.updateIMG = async (req, res) => {
     try{
+        console.log(req)
         const user = new User({ id: req.userId, img: req.file.filename })
 
         const userUpdated = await user.updateIMG();
