@@ -78,9 +78,9 @@ class User{
   check(type){
     if(type === 'signup'){
       if(!this.body.name) this.errors.push('Insira um nome valido.');
+      this.passwordCheck()
     }
     if(!validator.isEmail(this.body.email)) this.errors.push('Insira um e-mail valido.');
-    this.passwordCheck()
   }
   
   async userAlreadyRegistered(){

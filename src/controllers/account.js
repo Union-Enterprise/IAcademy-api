@@ -7,7 +7,7 @@ const login = async (req, res) => {
     const user = await login.login();
 
     if(login.errors.length > 0){
-        return res.json(login.errors)
+        return res.status(401).json(login.errors)
     }
 
     const { id, name, email, img, links, is_premium } = user;
