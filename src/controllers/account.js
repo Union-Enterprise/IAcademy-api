@@ -182,6 +182,37 @@ exports.getUser = async (req, res) => {
     }
 }
 
+exports.updatePasswordAccess = async (req, res) => {
+    try{
+        const user = new User({ id: req.userId, password: req.body.password });
+        const senha1 = req.headers['oldpass']
+        result = await user.comparePassword(senha1)
+        if(result){
+            const userUpdated = await user.updatePassword()
+            if(user.errors.length > 0){
+                return res.json(user.errors);
+            }
+            res.json({
+                message: "Senha de usuário alterada com sucesso.",
+                user: userUpdated
+            })
+        }else{
+            res.json({
+                message: "Insira uma senha correta."
+            })
+            return;
+        }
+        if(user.errors.length > 0){
+            return res.json(user.errors)
+        }
+    } catch(err){
+        console.log(err)
+        res.json({
+            message: "Não foi possível comparar senha"
+        })
+    }
+}
+
 exports.exit = async (req, res) => {
     try{
         res.clearCookie("token");

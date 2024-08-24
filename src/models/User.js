@@ -51,10 +51,13 @@ class User{
     const lower = /[a-z]/.test(this.body.password);
     const upper = /[A-Z]/.test(this.body.password);
     const number = /\d/.test(this.body.password);
+    const length = (this.body.password).length;
 
-    if(this.body.password.length <= 7 || !lower || !upper || !number) {
+    if(length <= 7 || !lower || !upper || !number) {
       this.errors.push('Insira uma senha com mais de 8 caracteres, entre eles letras minúsculas, maiúsculas e números');
       return false
+    } else {
+      return true
     }
     
   }
@@ -70,7 +73,6 @@ class User{
 
     const salt = bcrypt.genSaltSync();
     this.body.password = bcrypt.hashSync(this.body.password, salt);
-    
     this.user = await UserModel.create(this.body);
     return this.user;
   }
@@ -104,13 +106,22 @@ class User{
       this.user = null;
       return;
     }
-
+    
     return this.user;
   }
-
+  
+  async comparePassword(oldPassword){
+    this.user = await UserModel.findOne({_id: this.body.id}, ["password"])
+    if(!bcrypt.compareSync(oldPassword, this.user.password) && oldPassword !== this.user.password){
+      this.errors.push("A senha está incorreta.");
+      return false;
+    }else {
+      return true;
+    }
+  }
   async delete(){
     const user = await UserModel.findOneAndDelete({ _id: this.body.id, email: this.body.email, name: this.body.name }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium"])
-
+    
     return user;
   }
 
@@ -147,8 +158,10 @@ class User{
       this.errors.push("Insira um senha válida");
       return;
     }
-    if(!this.passwordCheck()) return;
-
+    if(!this.passwordCheck()){
+      this.errors.push("Insira uma senha com mais de 8 caracteres, entre eles letras minúsculas, maiúsculas e números");
+      return;
+    } 
     const salt = bcrypt.genSaltSync();
     this.body.password = bcrypt.hashSync(this.body.password, salt);
     let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { password: this.body.password })
