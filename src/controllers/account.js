@@ -216,6 +216,9 @@ exports.updatePasswordAccess = async (req, res) => {
 exports.exit = async (req, res) => {
     try{
         res.clearCookie("token");
+        res.json({
+            message: "Saiu com sucesso"
+        })
     }catch(err){
         console.log(err)
         res.json({
