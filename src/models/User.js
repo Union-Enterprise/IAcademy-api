@@ -119,8 +119,9 @@ class User{
       return true;
     }
   }
+  
   async delete(){
-    const user = await UserModel.findOneAndDelete({ _id: this.body.id, email: this.body.email, name: this.body.name }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium"])
+    const user = await UserModel.findOneAndDelete({ _id: this.body.id, email: this.body.email, name: this.body.name }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"])
     
     return user;
   }
@@ -131,7 +132,7 @@ class User{
       return;
     }
     let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { name: this.body.name })
-    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium"]);
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"]);
 
     return user;
   }
@@ -148,7 +149,7 @@ class User{
     }
 
     let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { email: this.body.email })
-    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium"]);
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"]);
 
     return user;
   }
@@ -165,7 +166,7 @@ class User{
     const salt = bcrypt.genSaltSync();
     this.body.password = bcrypt.hashSync(this.body.password, salt);
     let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { password: this.body.password })
-    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium"]);
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"]);
 
     return user;
   }
@@ -181,20 +182,20 @@ class User{
       return;
     }
     user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { cpf: this.body.cpf })
-    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium"]);
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"]);
 
     return user;
   }
 
   async updateIMG(){
     let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { img: this.body.img })
-    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium"]);
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"]);
 
     return user;
   }
 
   async getUser(){
-    return await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium"]);
+    return await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"]);
   }
 }
 

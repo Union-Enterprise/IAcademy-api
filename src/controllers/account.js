@@ -27,7 +27,7 @@ const login = async (req, res) => {
 
 exports.register = async (req, res) => {
     try{    
-        req.body.nickname = req.body.name.replace(" ", "")
+        req.body.nickname = req.body.name.replaceAll(" ", "")
         req.body.nickname = req.body.nickname.toLowerCase()+"_"+new Date().getTime();
         const userModel = new User(req.body);
         await userModel.register();

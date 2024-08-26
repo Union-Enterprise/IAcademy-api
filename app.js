@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const testerSeeder = require('./src/seeders/tester').seed;
 
 const routes = require('./routes');
 require('dotenv').config();
@@ -8,7 +9,6 @@ const cors = require('cors');
 
 const app = express();
 app.use(cookieParser());
-
 
 app.use(cors({
     origin: 'http://localhost:3000',
@@ -29,7 +29,9 @@ mongoose.connect(process.env.CONNECTIONSTRING,
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
-  .then(() => app.emit('ready'))
+  .then(async () => {
+    app.emit('ready');
+  })
   .catch(e => console.log(e));
 
 app.on('ready', () => app.listen(process.env.PORT, () => {
