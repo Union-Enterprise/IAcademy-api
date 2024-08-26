@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const testerSeeder = require('./src/seeders/tester').seed;
 
 const routes = require('./routes');
 require('dotenv').config();
