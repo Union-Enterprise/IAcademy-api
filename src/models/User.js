@@ -35,7 +35,9 @@ const UserSchema = new mongoose.Schema({
       "validade": "",
       "cvv": ""
     }
-  }
+  },
+  passwordResetToken: { type: String, default: "" },
+  passwordResetExpires: { type: Date, default: "" }
 }, { timestamps: true })
 
 const UserModel = mongoose.model('User', UserSchema);
@@ -196,6 +198,55 @@ class User{
 
   async getUser(){
     return await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"]);
+  }
+
+  async forgotPassword(email, token, now){
+    const user = await UserModel.findOne({ email });
+
+    await UserModel.findOneAndUpdate({ email }, { passwordResetToken: token, passwordResetExpires: now })
+
+    const userUp = await UserModel.findOne({ email });
+
+    return user;
+  }
+
+  async resetPassword(token, password){
+    this.user = await UserModel.findOne({ email: this.body.email });
+
+    if(!this.user){
+      this.errors.push('Email não encontrado');
+      return;
+    }
+
+    if(token !== this.user.passwordResetToken){
+      this.errors.push('Token invalido')
+      return;
+    }
+
+    const now = new Date();
+
+    if(now > this.user.passwordResetExpires){
+      this.errors.push('Token expirado, gere um novo.');
+      return;
+    }
+
+    if(!password){
+      this.errors.push("Insira um senha válida");
+      return;
+    }
+    this.body.password = password;
+    if(!this.passwordCheck()){
+      this.errors.push("Insira uma senha com mais de 8 caracteres, entre eles letras minúsculas, maiúsculas e números");
+      return;
+    } 
+    const salt = bcrypt.genSaltSync();
+    this.body.password = bcrypt.hashSync(password, salt);
+
+    await UserModel.findByIdAndUpdate(this.user._id, { password: this.body.password })
+
+    const user = await UserModel.findById(this.user._id, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"]);
+
+    return user;
   }
 }
 

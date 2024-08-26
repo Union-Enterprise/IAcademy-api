@@ -1,4 +1,7 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+
+const mailer = require('../modules/mailer')
 
 const { User } = require('../models/User');
 
@@ -142,7 +145,6 @@ exports.updateCPF = async (req, res) => {
 
 exports.updateIMG = async (req, res) => {
     try{
-        console.log(req)
         const user = new User({ id: req.userId, img: req.file.filename })
 
         const userUpdated = await user.updateIMG();
@@ -224,6 +226,63 @@ exports.exit = async (req, res) => {
         res.json({
             message: "Não foi possivel sair"
         })
+    }
+}
+
+exports.forgotPassword = async (req, res) => {
+    const { email } = req.body;
+
+    try{
+        const user = new User({ email })
+            
+        const token = crypto.randomBytes(20).toString('hex');
+        
+        const now = new Date();
+        now.setHours(now.getHours() + 1);
+        
+        const userData = await user.forgotPassword(email, token, now);
+
+        if(!userData){
+            return res.status(400).json({ message: "Usuario não encontrado" })
+        }
+        
+        if(user.errors.length > 0){
+            return res.json(user.errors);
+        } 
+        
+        mailer.sendMail({
+            to: email,
+            from: 'IAcademy.account@IAcademy.com',
+            template: 'forgot_password',
+            context: { token }
+        }, (err) => {
+            if(err)
+                res.status(400).json({message: err})
+        })
+
+        res.json({ message: "Email enviado" })
+    }catch(err){
+        console.log(err);
+        res.status(400).json({ message: "Erro ao recuperar a senha" })
+    }
+}
+
+exports.resetPassword = async (req, res) => {
+    const { email, token, password } = req.body;
+
+    try{
+        const user = new User({ email })
+
+        const userUpdated = await user.resetPassword(token, password);
+
+        if(user.errors.length > 0){
+            return res.json(user.errors);
+        }
+
+        res.json(userUpdated);
+    }catch(err){
+        console.log(err)
+        res.status(400).json({message: "Erro ao resetar senha"})
     }
 }
 
