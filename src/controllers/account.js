@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
-const mailer = require('../modules/mailer')
-
+const mailer = require('../modules/mailer');
 const { User } = require('../models/User');
+
+require('dotenv').config();
 
 const login = async (req, res) => {
     const login = new User(req.body);
@@ -235,7 +236,7 @@ exports.forgotPassword = async (req, res) => {
     try{
         const user = new User({ email })
             
-        const token = crypto.randomBytes(20).toString('hex');
+        const token = crypto.randomBytes(3).toString('hex');
         
         const now = new Date();
         now.setHours(now.getHours() + 1);
@@ -249,12 +250,13 @@ exports.forgotPassword = async (req, res) => {
         if(user.errors.length > 0){
             return res.json(user.errors);
         } 
-        
+
         mailer.sendMail({
             to: email,
-            from: 'IAcademy.account@IAcademy.com',
+            from: `IAcademy <${process.env.USER_EMAIL}>`,
             template: 'forgot_password',
-            context: { token }
+            context: { name: userData.name, token },
+            subject: "Recuperação de senha - IAcademy"
         }, (err) => {
             if(err)
                 res.status(400).json({message: err})
