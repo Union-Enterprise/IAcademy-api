@@ -210,6 +210,29 @@ class User{
     return user;
   }
 
+  async verifyToken(token){
+    this.user = await UserModel.findOne({ email: this.body.email });
+
+    if(!this.user){
+      this.errors.push('Email não encontrado');
+      return;
+    }
+
+    if(token !== this.user.passwordResetToken){
+      this.errors.push('Token invalido')
+      return;
+    }
+
+    const now = new Date();
+
+    if(now > this.user.passwordResetExpires){
+      this.errors.push('Token expirado, gere um novo.');
+      return;
+    }
+
+    return true;
+  }
+
   async resetPassword(token, password){
     this.user = await UserModel.findOne({ email: this.body.email });
 
@@ -245,6 +268,7 @@ class User{
     await UserModel.findByIdAndUpdate(this.user._id, { password: this.body.password })
 
     const user = await UserModel.findById(this.user._id, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"]);
+    await UserModel.findByIdAndUpdate(this.user._id, { passwordResetToken: "", passwordResetExpires: "" })
 
     return user;
   }

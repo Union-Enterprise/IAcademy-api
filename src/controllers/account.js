@@ -278,13 +278,32 @@ exports.resetPassword = async (req, res) => {
         const userUpdated = await user.resetPassword(token, password);
 
         if(user.errors.length > 0){
-            return res.json(user.errors);
+            return res.status(400).json(user.errors);
         }
 
         res.json(userUpdated);
     }catch(err){
         console.log(err)
         res.status(400).json({message: "Erro ao resetar senha"})
+    }
+}
+
+exports.verifyToken = async (req, res) => {
+    const { token, email } = req.body;
+
+    try{
+        const user = new User({ email })
+
+        if(await user.verifyToken(token)){
+            return res.status(200).json({"message": "Token valido!"});
+        }
+
+        if(user.errors.length > 0){
+            return res.status(401).json(user.errors);
+        }
+    }catch(err){
+        console.log(err)
+        res.status(400).json({message: "Erro ao validar token"})
     }
 }
 
