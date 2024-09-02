@@ -6,9 +6,10 @@ const { validarCPF } = require('../modules/cpfVerify');
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  nickname: { type: String, default: "" },
-  email: { type: String, required: true },
-  password: { type: String, required: true},
+  nickname: { type: String, default: "", unique: true },
+  googleId: { type: String, unique: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, default: "" },
   nascimento: { type: Date, default: "" },
   telefone: { type: String, default: "" },
   img: { type: String, default: "" },
@@ -150,6 +151,11 @@ class User{
       return;
     }
 
+    if(await UserModel.findOne({ _id: this.body.id }, ['googleId'])){
+      this.errors.push("Não é possivel alterar email que está vinculado a uma conta Google.");
+      return;
+    }
+
     let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { email: this.body.email })
     user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"]);
 
@@ -190,7 +196,7 @@ class User{
   }
 
   async updateIMG(){
-    let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { img: this.body.img })
+    let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { img: `http://localhost:5002/files/`+this.body.img })
     user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"]);
 
     return user;
