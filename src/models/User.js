@@ -7,7 +7,7 @@ const { validarCPF } = require('../modules/cpfVerify');
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   nickname: { type: String, default: "", unique: true },
-  googleId: { type: String, unique: true },
+  googleId: { type: String },
   email: { type: String, required: true, unique: true },
   password: { type: String, default: "" },
   nascimento: { type: Date, default: "" },
