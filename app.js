@@ -35,7 +35,7 @@ mongoose.connect(process.env.CONNECTIONSTRING,
   .then(async () => {
     app.emit('ready');
   })
-  .catch(e => console.log(e));
+  .catch(err => console.log(err));
 
 app.on('ready', () => app.listen(process.env.PORT, () => {
     console.log(`http://localhost:${process.env.PORT}`);

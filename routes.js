@@ -36,4 +36,10 @@ route.get("/profile", loginRequired, getUser)
 route.get('/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'], session: false}));
 route.get('/google/callback', passport.authenticate('google', { failureRedirect: 'http://localhost:3000/', session: false }), googleCallback);
 
+// rotas adm
+route.post('/login_adm', (req, res) => {
+    req.body.type="adm";
+    login(req, res);
+});
+
 module.exports = route;

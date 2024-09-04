@@ -40,8 +40,8 @@ exports.register = async (req, res) => {
         }
         
         return await login(req, res);
-    }catch(e){
-        console.log(e);
+    }catch(err){
+        console.log(err);
     }
 }
 
