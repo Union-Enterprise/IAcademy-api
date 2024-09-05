@@ -332,6 +332,21 @@ class User{
       throw error;
     }
   }
+
+  async usersTotal() {
+    try {
+      const count = await UserModel.countDocuments({
+        $or: [
+          { is_adm: { $exists: false } },
+          { is_adm: false }
+        ]
+      });
+      return count;
+    } catch (error) {
+      console.error('erro ao contar usuarios:', error);
+      throw error;
+    }
+  }
 }
 
 module.exports = { User, UserModel };

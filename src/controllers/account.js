@@ -321,4 +321,11 @@ exports.usersByMonth = async (req, res) => {
     return res.status(200).json(usersbymonths);
 }
 
+exports.usersTotal = async (req, res) => {
+    const user = new User()
+    
+    const qtd = await user.usersTotal();
+    return res.status(200).json(qtd);
+}
+
 exports.login = login;
