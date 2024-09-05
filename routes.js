@@ -4,6 +4,7 @@ const passport = require('passport');
 
 const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, getUser, exit, verifyToken, updatePasswordAccess, forgotPassword, resetPassword, getRecentUsersADM, usersByMonth, usersTotal } = require('./src/controllers/account')
 const { loginRequired } = require("./src/middlewares/loginRequired")
+const { loginAdmRequired,  } = require("./src/middlewares/loginAdmRequired")
 const { storage, fileFilter } = require('./src/config/multerConfig')
 const { googleCallback } = require('./src/controllers/google')
 
@@ -42,8 +43,8 @@ route.post('/login_adm', (req, res) => {
     login(req, res);
 });
 
-route.post('/recent_users', getRecentUsersADM);
-route.get('/users_by_month', usersByMonth);
-route.get('/users_total', usersTotal);
+route.post('/recent_users', loginAdmRequired, getRecentUsersADM);
+route.get('/users_by_month', loginAdmRequired, usersByMonth);
+route.get('/users_total', loginAdmRequired, usersTotal);
 
 module.exports = route;
