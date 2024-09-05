@@ -2,7 +2,7 @@ const route = require('express').Router()
 const multer = require('multer')
 const passport = require('passport');
 
-const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, getUser, exit, verifyToken, updatePasswordAccess, forgotPassword, resetPassword, getRecentUsersADM } = require('./src/controllers/account')
+const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, getUser, exit, verifyToken, updatePasswordAccess, forgotPassword, resetPassword, getRecentUsersADM, usersByMonth } = require('./src/controllers/account')
 const { loginRequired } = require("./src/middlewares/loginRequired")
 const { storage, fileFilter } = require('./src/config/multerConfig')
 const { googleCallback } = require('./src/controllers/google')
@@ -43,5 +43,6 @@ route.post('/login_adm', (req, res) => {
 });
 
 route.post('/recent_users', getRecentUsersADM);
+route.get('/users_by_month', usersByMonth)
 
 module.exports = route;

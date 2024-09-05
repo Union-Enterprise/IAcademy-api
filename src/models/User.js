@@ -63,7 +63,6 @@ class User{
     } else {
       return true
     }
-    
   }
 
   async register(){
@@ -100,12 +99,10 @@ class User{
 
     this.user = await UserModel.findOne({ email: this.body.email });
 
-
     if((!this.user.is_adm && this.body.type=="adm") || (this.user.is_adm && !this.body.type)
-       || !this.user 
-       || !bcrypt.compareSync(this.body.password, this.user.password)){
+       || (!this.user) 
+       || (!bcrypt.compareSync(this.body.password, this.user.password) && this.body.password !== this.user.password)){
       this.errors.push('O e-mail ou a senha está incorreto.');
-      this.user = null;
       return; 
     }
     return this.user;
@@ -294,6 +291,44 @@ class User{
       return recentUsers;
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
+      throw error;
+    }
+  }
+
+  async usersByMonth() {
+    try {
+      const usersPerMonth = await UserModel.aggregate([
+        {
+          $match: {
+            $or: [
+              { is_adm: { $exists: false } },
+              { is_adm: false }
+            ]
+          }
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$createdAt" },
+              month: { $month: "$createdAt" }
+            },
+            count: { $sum: 1 }
+          }
+        },
+        {
+          $match: {
+            "_id.year": 2024
+          }
+        },
+        {
+          $sort: {
+            "_id.month": 1
+          }
+        }
+      ]);
+      return usersPerMonth;
+    } catch (error) {
+      console.error('Erro ao buscar usuários por mês:', error);
       throw error;
     }
   }

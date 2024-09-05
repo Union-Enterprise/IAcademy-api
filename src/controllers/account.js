@@ -314,4 +314,11 @@ exports.getRecentUsersADM = async (req, res) => {
     return res.status(200).json(users);
 }
 
+exports.usersByMonth = async (req, res) => {
+    const user = new User()
+    
+    const usersbymonths = await user.usersByMonth();
+    return res.status(200).json(usersbymonths);
+}
+
 exports.login = login;
