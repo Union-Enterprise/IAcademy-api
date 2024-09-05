@@ -307,4 +307,11 @@ exports.verifyToken = async (req, res) => {
     }
 }
 
+exports.getRecentUsersADM = async (req, res) => {
+    const user = new User()
+    
+    const users = await user.getUsersADM(req.body.qtd);
+    return res.status(200).json(users);
+}
+
 exports.login = login;

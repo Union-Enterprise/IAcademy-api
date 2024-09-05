@@ -276,6 +276,27 @@ class User{
 
     return user;
   }
+
+  async getUsersADM(qtd){
+    try {
+      let recentUsers;
+      if(qtd){
+          recentUsers = await UserModel.find({$or: [{ is_adm: { $exists: false } }, { is_adm: false }] })
+          .sort({ createdAt: -1 })
+          .limit(qtd)
+          .select('name nickname email img'); 
+      }else{
+        recentUsers = await UserModel.find({$or: [{ is_adm: { $exists: false } }, { is_adm: false }] })
+        .sort({ createdAt: -1 })
+        .select('name nickname email img'); 
+      }
+
+      return recentUsers;
+    } catch (error) {
+      console.error('Erro ao buscar usuários:', error);
+      throw error;
+    }
+  }
 }
 
 module.exports = { User, UserModel };
