@@ -34,11 +34,22 @@ exports.register = async (req, res) => {
         req.body.nickname = req.body.name.replaceAll(" ", "");
         req.body.nickname = req.body.nickname.toLowerCase()+"_"+new Date().getTime();
         const userModel = new User(req.body);
-        await userModel.register();
+        const user = await userModel.register();
         if(userModel.errors.length > 0){
             return res.json(userModel.errors);
         }
         
+        mailer.sendMail({
+            to: user.email,
+            from: `IAcademy <${process.env.USER_EMAIL}>`,
+            template: 'new_account',
+            context: { name: user.name },
+            subject: "Obrigado por criar sua conta - IAcademy"
+        }, (err) => {
+            if(err)
+                res.status(400).json({message: err})
+        })
+
         return await login(req, res);
     }catch(err){
         console.log(err);
