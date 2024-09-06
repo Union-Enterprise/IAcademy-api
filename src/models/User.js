@@ -147,9 +147,7 @@ class User{
       return;
     }
 
-    if(await UserModel.findOne({
-      _id: this.body.id,
-      googleId: { $exists: true }})){
+    if(await UserModel.findOne({  _id: this.body.id, googleId: { $exists: true, $ne: "" }})){
       this.errors.push("Não é possivel alterar email que está vinculado a uma conta Google.");
       return;
     }
