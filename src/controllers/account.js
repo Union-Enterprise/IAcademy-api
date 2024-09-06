@@ -81,6 +81,7 @@ exports.updateName = async (req, res) => {
 exports.updateEmail = async (req, res) => {
     try{        
         const user = new User({ id: req.userId, email: req.body.email });
+
         
         const userUpdated = await user.updateEmail()
         
@@ -190,6 +191,9 @@ exports.updatePasswordAccess = async (req, res) => {
         const user = new User({ id: req.userId, password: req.body.password });
         const senha1 = req.headers['oldpass']
         result = await user.comparePassword(senha1)
+
+        console.log(senha1)
+
         if(result){
             const userUpdated = await user.updatePassword()
             if(user.errors.length > 0){

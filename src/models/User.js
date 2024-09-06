@@ -7,7 +7,7 @@ const { validarCPF } = require('../modules/cpfVerify');
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   nickname: { type: String, default: "", unique: true },
-  googleId: { type: String },
+  googleId: { type: String, default: "" },
   email: { type: String, required: true, unique: true },
   password: { type: String, default: "" },
   nascimento: { type: Date, default: "" },
@@ -146,7 +146,9 @@ class User{
       return;
     }
 
-    if(await UserModel.findOne({ _id: this.body.id }, ['googleId'])){
+    if(await UserModel.findOne({
+      _id: this.body.id,
+      googleId: { $exists: true }})){
       this.errors.push("Não é possivel alterar email que está vinculado a uma conta Google.");
       return;
     }
@@ -198,7 +200,7 @@ class User{
   }
 
   async getUser(){
-    return await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"]);
+    return await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "email", "googleId", "nascimento", "telefone", "img", "cpf", "genero", "links", "is_premium", "cep", "rua", "bairro", "cidade", "numero", "complemento", "estado", "is_adm", "createdAt"]);
   }
 
   async forgotPassword(email, token, now){
