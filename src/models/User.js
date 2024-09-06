@@ -21,6 +21,7 @@ const UserSchema = new mongoose.Schema({
     default: {}
   },
   is_premium: { type: Boolean, default: false },
+  rua: { type: String, default: "" },
   cep: { type: String, default: "" },
   bairro: { type: String, default: "" },
   cidade: { type: String, default: "" },
