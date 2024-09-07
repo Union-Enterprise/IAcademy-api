@@ -161,6 +161,34 @@ exports.updateCPF = async (req, res) => {
     }
 }
 
+exports.updateProfile= async (req, res) => {
+    try{        
+        const user = new User({ id: req.userId, name: req.body.name, nascimento: req.body.nascimento, genero: req.body.genero, telefone: req.body.telefone });
+        
+        if(req.body.genero!=""){
+            user.updateGender();
+        }
+        if(req.body.nascimento!=""){
+            user.updateBirth();
+        }
+        if(req.body.telefone!=""){
+            user.updatePhone(); 
+        } 
+        const userUpdated = await user.updateName();
+        if(user.errors.length > 0){
+            return res.json(user.errors);
+        }
+        
+        res.json({
+            message: "Dados alterados com sucesso.",
+            user: userUpdated
+        })
+    }catch(err){
+        res.json("Alguns dos danos não conseguiram ser alterados.")
+    }
+}
+
+
 exports.updateIMG = async (req, res) => {
     try{
         const user = new User({ id: req.userId, img: req.file.filename })

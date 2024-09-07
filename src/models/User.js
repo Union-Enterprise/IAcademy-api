@@ -198,6 +198,39 @@ class User{
     return user;
   }
 
+  async updateGender(){
+    if(!this.body.genero){
+      this.errors.push("Insira um gênero");
+      return;
+    }
+    let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { genero: this.body.genero })
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"]);
+
+    return user;
+  }
+
+  async updateBirth(){
+    if(!this.body.nascimento){
+      this.errors.push("Insira uma data de nascimento");
+      return;
+    }
+    let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { nascimento: this.body.nascimento })
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"]);
+
+    return user;
+  }
+
+  async updatePhone(){
+    if(!this.body.telefone){
+      this.errors.push("Insira um número de telefone");
+      return;
+    }
+    let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { telefone: this.body.telefone })
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"]);
+
+    return user;
+  }
+
   async updateIMG(){
     let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { img: `http://localhost:5002/files/`+this.body.img })
     user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"]);
