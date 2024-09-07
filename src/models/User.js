@@ -97,16 +97,23 @@ class User{
     if(type !== 'auto') this.check();
     
     if(this.errors.length > 0) return;
+    try{
+      this.user = await UserModel.findOne({ email: this.body.email });
 
-    this.user = await UserModel.findOne({ email: this.body.email });
-
-    if((!this.user.is_adm && this.body.type=="adm") || (this.user.is_adm && !this.body.type)
-       || (!this.user) 
-       || (!bcrypt.compareSync(this.body.password, this.user.password) && this.body.password !== this.user.password)){
-      this.errors.push('O e-mail ou a senha está incorreto.');
-      return; 
+      if(this.user === null){
+        this.errors.push('O e-mail ou a senha está incorreto.');
+        return;
+      }
+      if((!this.user.is_adm && this.body.type=="adm") || (this.user.is_adm && !this.body.type)
+         || (!this.user) 
+         || (!bcrypt.compareSync(this.body.password, this.user.password) && this.body.password !== this.user.password)){
+        this.errors.push('O e-mail ou a senha está incorreto.');
+        return; 
+      }
+      return this.user;
+    }catch(err){
+      console.log(err);
     }
-    return this.user;
   }
   
   async comparePassword(oldPassword){

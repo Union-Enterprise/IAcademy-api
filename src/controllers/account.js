@@ -39,18 +39,23 @@ exports.register = async (req, res) => {
             return res.json(userModel.errors);
         }
         
-        mailer.sendMail({
-            to: user.email,
-            from: `IAcademy <${process.env.USER_EMAIL}>`,
-            template: 'new_account',
-            context: { name: user.name },
-            subject: "Obrigado por criar sua conta - IAcademy"
-        }, (err) => {
-            if(err)
-                res.status(400).json({message: err})
-        })
+        if(process.env.SEND_REGISTER_EMAIL === "true"){
+            mailer.sendMail({
+                to: user.email,
+                from: `IAcademy <${process.env.USER_EMAIL}>`,
+                template: 'new_account',
+                context: { name: user.name },
+                subject: "Obrigado por criar sua conta - IAcademy"
+            }, (err) => {
+                if(err)
+                    res.status(400).json({message: err})
+            })
+        }
 
-        return await login(req, res);
+        const { id, name, email, img, links, is_premium } = user;
+
+        return res.json({ id, name, email, img, links, is_premium });
+        // return await login(req, res);
     }catch(err){
         console.log(err);
     }
@@ -265,19 +270,21 @@ exports.forgotPassword = async (req, res) => {
         if(user.errors.length > 0){
             return res.json(user.errors);
         } 
-
-        mailer.sendMail({
-            to: email,
-            from: `IAcademy <${process.env.USER_EMAIL}>`,
-            template: 'forgot_password',
-            context: { name: userData.name, token },
-            subject: "Recuperação de senha - IAcademy"
-        }, (err) => {
-            if(err)
-                res.status(400).json({message: err})
-        })
-
-        res.json({ message: "Email enviado" })
+        if(process.env.SEND_TOKEN_EMAIL === "true"){
+            mailer.sendMail({
+                to: email,
+                from: `IAcademy <${process.env.USER_EMAIL}>`,
+                template: 'forgot_password',
+                context: { name: userData.name, token },
+                subject: "Recuperação de senha - IAcademy"
+            }, (err) => {
+                if(err)
+                    res.status(400).json({message: err})
+            })
+            res.json({ message: "Email enviado" })
+        }else{
+            res.status(400).json({ message: "O envio de email está desabilitado no momento, ative no .env" })
+        }
     }catch(err){
         console.log(err);
         res.status(400).json({ message: "Erro ao recuperar a senha" })

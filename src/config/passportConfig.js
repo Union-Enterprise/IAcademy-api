@@ -2,6 +2,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const jwt = require('jsonwebtoken');
 const { UserModel } = require('../models/User');
+const mailer = require('../modules/mailer');
 require('dotenv').config();
 
 passport.use(new GoogleStrategy({
@@ -25,6 +26,20 @@ async (accessToken, refreshToken, profile, done) => {
           nickname: profile.displayName.replaceAll(" ", "").toLowerCase()+"_"+new Date().getTime(),
           img: profile.photos[0].value
         });
+
+        
+        if(process.env.SEND_REGISTER_EMAIL === "true"){
+          mailer.sendMail({
+              to: profile.emails[0].value,
+              from: `IAcademy <${process.env.USER_EMAIL}>`,
+              template: 'new_account_google',
+              context: { name: profile.displayName },
+              subject: "Obrigado por criar sua conta com o google - IAcademy"
+          }, (err) => {
+              if(err)
+                  res.status(400).json({ message: err })
+          })
+        }
       }
     }
 
