@@ -209,6 +209,20 @@ class User{
     return user;
   }
 
+  async updateAddress(){
+    if(!this.body.cep){
+      this.errors.push("Insira um endereço");
+      return;
+    }
+    let user = await UserModel.findOneAndUpdate({ _id: this.body.id }, { cep: this.body.cep, rua: this.body.rua, numero: this.body.numero, bairro: this.body.bairro, cidade: this.body.cidade, estado: this.body.estado })
+    if(this.body.complemento!=""){
+      user = await UserModel.findOneAndUpdate({ _id: this.body.id }, {complemento: this.body.complemento});
+    }
+    user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt", "cep", "rua", "numero", "bairro", "cidade", "complemento", "estado"]);
+
+    return user;
+  }
+
   async updateBirth(){
     if(!this.body.nascimento){
       this.errors.push("Insira uma data de nascimento");

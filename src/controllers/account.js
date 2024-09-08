@@ -161,6 +161,27 @@ exports.updateCPF = async (req, res) => {
     }
 }
 
+exports.updateAddress = async (req, res) => {
+    try{
+        const user = new User({ id: req.userId, cep: req.body.cep, rua: req.body.rua, numero: req.body.numero, bairro: req.body.bairro, cidade: req.body.cidade, complemento: req.body.complemento, estado: req.body.estado})
+
+        const userUpdated = await user.updateAddress();
+
+        if(user.errors.length > 0){
+            return res.json(user.errors);
+        }
+        
+        res.json({
+            message: "Endereço alterado com sucesso.",
+            user: userUpdated
+        })
+    }catch(err){
+        console.log(err)
+        res.json({
+            message: "Endereço não pode ser alterado"
+        })
+    }
+}
 exports.updateProfile= async (req, res) => {
     try{        
         const user = new User({ id: req.userId, name: req.body.name, nascimento: req.body.nascimento, genero: req.body.genero, telefone: req.body.telefone });
