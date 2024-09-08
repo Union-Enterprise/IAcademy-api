@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   nickname: { type: String, default: "", unique: true },
   googleId: { type: String, default: "" },
+  facebookId: { type: String, default: "" },
   email: { type: String, required: true, unique: true },
   password: { type: String, default: "" },
   nascimento: { type: Date, default: "" },

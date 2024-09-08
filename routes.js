@@ -7,6 +7,8 @@ const { loginRequired } = require("./src/middlewares/loginRequired")
 const { loginAdmRequired,  } = require("./src/middlewares/loginAdmRequired")
 const { storage, fileFilter } = require('./src/config/multerConfig')
 const { googleCallback } = require('./src/controllers/google')
+const { facebookCallback } = require('./src/controllers/facebook')
+
 
 const upload = multer({ storage: storage, fileFilter: fileFilter, limits: {
     fileSize: 1024 * 1024 * 25
@@ -37,7 +39,11 @@ route.get("/profile", loginRequired, getUser)
 
 // google login
 route.get('/google', passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'], session: false}));
-route.get('/google/callback', passport.authenticate('google', { failureRedirect: 'http://localhost:3000/', session: false }), googleCallback);
+route.get('/google/callback', passport.authenticate('google', { failureRedirect: 'http://localhost:3000/login', session: false }), googleCallback);
+// facebook login
+route.get('/facebook', passport.authenticate('facebook', { scope: ['email'], session: false }));
+route.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: 'http://localhost:3000/login', session: false }), facebookCallback);
+
 
 // rotas adm
 route.post('/login_adm', (req, res) => {

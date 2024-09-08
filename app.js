@@ -1,9 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const passport = require('./src/config/passportConfig');
 const passportJWT = require('./src/config/passportJWTConfig'); 
+const passport = require('passport');
 require('dotenv').config();
+
+require('./src/config/passportGoogleConfig');
+require('./src/config/passportFacebookConfig');
+
 const cors = require('cors');
 
 const app = express();
