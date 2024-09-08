@@ -41,7 +41,8 @@ const UserSchema = new mongoose.Schema({
   },
   passwordResetToken: { type: String, default: "" },
   passwordResetExpires: { type: Date, default: "" },
-  is_adm: { type: Boolean, default: false }
+  is_adm: { type: Boolean, default: false },
+  is_banned: { type: Boolean, default: false },
 }, { timestamps: true })
 
 const UserModel = mongoose.model('User', UserSchema);
