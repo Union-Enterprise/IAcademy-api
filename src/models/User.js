@@ -331,18 +331,18 @@ class User{
     return user;
   }
 
-  async getUsersADM(qtd){
+  async getRecentUsersADM(qtd){
     try {
       let recentUsers;
       if(qtd){
           recentUsers = await UserModel.find({$or: [{ is_adm: { $exists: false } }, { is_adm: false }] })
           .sort({ createdAt: -1 })
           .limit(qtd)
-          .select('name nickname email img'); 
+          .select('name nickname email img is_adm is_premium is_banned'); 
       }else{
-        recentUsers = await UserModel.find({$or: [{ is_adm: { $exists: false } }, { is_adm: false }] })
-        .sort({ createdAt: -1 })
-        .select('name nickname email img'); 
+          recentUsers = await UserModel.find({$or: [{ is_adm: { $exists: false } }, { is_adm: false }] })
+          .sort({ createdAt: -1 })
+          .select('name nickname email img is_adm is_premium is_banned'); 
       }
 
       return recentUsers;
@@ -390,18 +390,51 @@ class User{
     }
   }
 
-  async usersTotal() {
+  async usersTotal(){
     try {
-      const count = await UserModel.countDocuments({
-        $or: [
-          { is_adm: { $exists: false } },
-          { is_adm: false }
-        ]
-      });
-      return count;
+      const summary = await UserModel.aggregate([
+        {
+          $facet: {
+            totalUsers: [{ $count: "count" }],
+            premiumUsers: [{ $match: { is_premium: true } }, { $count: "count" }],
+            bannedUsers: [{ $match: { is_banned: true } }, { $count: "count" }],
+            notBannedUsers: [{ $match: { is_banned: false } }, { $count: "count" }]
+          }
+        },
+        {
+          $project: {
+            totalUsers: { $arrayElemAt: ["$totalUsers.count", 0] },
+            premiumUsers: { $arrayElemAt: ["$premiumUsers.count", 0] },
+            bannedUsers: { $arrayElemAt: ["$bannedUsers.count", 0] },
+            notBannedUsers: { $arrayElemAt: ["$notBannedUsers.count", 0] }
+          }
+        }
+      ]);
+  
+      return summary[0] || {
+        totalUsers: 0,
+        premiumUsers: 0,
+        bannedUsers: 0,
+        notBannedUsers: 0
+      };
     } catch (error) {
-      console.error('erro ao contar usuarios:', error);
+      console.log("Erro ao buscar quantidade de usuarios", error);
       throw error;
+    }
+  };
+  
+
+  async getUsersADM(){
+    try{
+      const users = await UserModel.find({})
+      .sort({ createdAt: -1 })
+      .select('name nickname email img is_adm is_premium is_banned');
+
+      return users;
+    }catch(err){
+      console.log(err);
+      this.errors.push('Não foi possivel buscar usuários.');
+      return;
     }
   }
 }

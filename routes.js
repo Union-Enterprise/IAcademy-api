@@ -2,7 +2,7 @@ const route = require('express').Router()
 const multer = require('multer')
 const passport = require('passport');
 
-const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, getUser, exit, verifyToken, updatePasswordAccess, forgotPassword, resetPassword, getRecentUsersADM, usersByMonth, usersTotal, updateProfile, updateAddress } = require('./src/controllers/account')
+const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, getUser, exit, verifyToken, updatePasswordAccess, forgotPassword, resetPassword, getRecentUsersADM, usersByMonth, usersTotal, updateProfile, updateAddress, getUsersADM } = require('./src/controllers/account')
 const { loginRequired } = require("./src/middlewares/loginRequired")
 const { loginAdmRequired,  } = require("./src/middlewares/loginAdmRequired")
 const { storage, fileFilter } = require('./src/config/multerConfig')
@@ -52,6 +52,7 @@ route.post('/login_adm', (req, res) => {
 });
 
 route.post('/recent_users', loginAdmRequired, getRecentUsersADM);
+route.get('/users', loginAdmRequired, getUsersADM);
 route.get('/users_by_month', loginAdmRequired, usersByMonth);
 route.get('/users_total', loginAdmRequired, usersTotal);
 

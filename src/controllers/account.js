@@ -379,10 +379,10 @@ exports.verifyToken = async (req, res) => {
 }
 
 exports.getRecentUsersADM = async (req, res) => {
-    const user = new User()
-    
-    const users = await user.getUsersADM(req.body.qtd);
-    return res.status(200).json(users);
+    const user = new User();
+
+    const users = await user.getRecentUsersADM(req.body.qtd);
+    return res.json(users);
 }
 
 exports.usersByMonth = async (req, res) => {
@@ -397,6 +397,13 @@ exports.usersTotal = async (req, res) => {
     
     const qtd = await user.usersTotal();
     return res.status(200).json(qtd);
+}
+
+exports.getUsersADM = async (req, res) => {
+    const user = new User();
+
+    const users = await user.getUsersADM();
+    res.status(200).json(users);
 }
 
 exports.login = login;
