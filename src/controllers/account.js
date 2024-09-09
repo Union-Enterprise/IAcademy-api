@@ -401,8 +401,9 @@ exports.usersTotal = async (req, res) => {
 
 exports.getUsersADM = async (req, res) => {
     const user = new User();
+    const { category, plan, status } = req.query;
 
-    const users = await user.getUsersADM();
+    const users = await user.getUsersADM(category, plan, status);
     res.status(200).json(users);
 }
 

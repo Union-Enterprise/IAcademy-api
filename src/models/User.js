@@ -433,18 +433,44 @@ class User {
   };
 
 
-  async getUsersADM() {
-    try {
-      const users = await UserModel.find({})
-        .sort({ createdAt: -1 })
-        .select('name nickname email img is_adm is_premium is_banned');
+  async getUsersADM(category, plan, status) {
+    let filter = {};
 
-      return users;
-    } catch (err) {
-      console.log(err);
-      this.errors.push('Não foi possivel buscar usuários.');
-      return;
+    if (category) {
+      filter.is_adm = category === "admin";
     }
+    if (plan) {
+      filter.is_premium = plan === "premium";
+    }
+    if (status) {
+      filter.is_banned = status === "sus";
+    }
+  
+    try {
+      const users = await UserModel.find(filter)
+        .select('name nickname email img is_adm is_premium is_banned');
+      
+      return users;
+    } catch (error) {
+      console.log("Erro ao buscar usuários", error);
+      this.errors.push('Erro ao buscar usuarios')
+      return;
+
+    }
+
+    
+  //   try {
+  //     const users = await UserModel.find({})
+  //       .sort({ createdAt: -1 })
+  //       .select('name nickname email img is_adm is_premium is_banned');
+
+  //     return users;
+  //   } catch (err) {
+  //     console.log(err);
+  //     this.errors.push('Não foi possivel buscar usuários.');
+  //     return;
+  //   }
+  // }
   }
 }
 
