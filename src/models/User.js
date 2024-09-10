@@ -108,7 +108,8 @@ class User {
       }
       if ((!this.user.is_adm && this.body.type == "adm") || (this.user.is_adm && !this.body.type)
         || (!this.user)
-        || (!bcrypt.compareSync(this.body.password, this.user.password) && this.body.password !== this.user.password)) {
+        || (!bcrypt.compareSync(this.body.password, this.user.password) && this.body.password !== this.user.password)
+        || this.user.is_banned) {
         this.errors.push('O e-mail ou a senha está incorreto.');
         return;
       }
@@ -129,11 +130,14 @@ class User {
   }
 
   async delete() {
-    const user = await UserModel.findOneAndDelete({ _id: this.body.id, email: this.body.email, name: this.body.name }, ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"])
-
+    const user = await UserModel.findOneAndUpdate(
+      { _id: this.body.id, email: this.body.email, name: this.body.name },
+      { $set: { is_banned: true } },
+      { new: true, fields: ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"] }
+    );
+  
     return user;
   }
-
   async updateName() {
     if (!this.body.name) {
       this.errors.push("Insira um nome válido");
