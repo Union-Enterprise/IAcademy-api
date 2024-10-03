@@ -44,3 +44,5 @@ mongoose.connect(process.env.CONNECTIONSTRING,
 app.on('ready', () => app.listen(process.env.PORT, () => {
     console.log(`http://localhost:${process.env.PORT}`);
 }));
+
+exports.mongoose = mongoose;

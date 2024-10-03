@@ -1,13 +1,13 @@
-const route = require('express').Router()
-const multer = require('multer')
+const route = require('express').Router();
+const multer = require('multer');
 const passport = require('passport');
-
-const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, getUser, exit, verifyToken, updatePasswordAccess, forgotPassword, resetPassword, getRecentUsersADM, usersByMonth, usersTotal, updateProfile, updateAddress, getUsersADM } = require('./src/controllers/account')
-const { loginRequired } = require("./src/middlewares/loginRequired")
-const { loginAdmRequired,  } = require("./src/middlewares/loginAdmRequired")
-const { storage, fileFilter } = require('./src/config/multerConfig')
-const { googleCallback } = require('./src/controllers/google')
-const { facebookCallback } = require('./src/controllers/facebook')
+const mongoose = require('mongoose');
+const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, getUser, exit, verifyToken, updatePasswordAccess, forgotPassword, resetPassword, getRecentUsersADM, usersByMonth, usersTotal, updateProfile, updateAddress, getUsersADM } = require('./src/controllers/account');
+const { loginRequired } = require("./src/middlewares/loginRequired");
+const { loginAdmRequired } = require("./src/middlewares/loginAdmRequired");
+const { storage, fileFilter } = require('./src/config/multerConfig');
+const { googleCallback } = require('./src/controllers/google');
+const { facebookCallback } = require('./src/controllers/facebook');
 
 
 const upload = multer({ storage: storage, fileFilter: fileFilter, limits: {
@@ -55,5 +55,19 @@ route.post('/recent_users', loginAdmRequired, getRecentUsersADM);
 route.get('/users', loginAdmRequired, getUsersADM);
 route.get('/users_by_month', loginAdmRequired, usersByMonth);
 route.get('/users_total', loginAdmRequired, usersTotal);
+
+// ia
+route.get('/roadmap', async (req, res) => {
+    try {
+        const db = mongoose.connection.db;
+        const collection = db.collection('roadmap');
+        const dados = await collection.find({}).toArray();
+        res.status(200).json(dados);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Erro ao obter dados', error });
+    }
+});
+
 
 module.exports = route;
