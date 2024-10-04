@@ -407,4 +407,32 @@ exports.getUsersADM = async (req, res) => {
     res.status(200).json(users);
 }
 
+exports.deleteUserADM = async (req, res) => {
+    try{        
+        const user = new User({ id: req.body.id, email: req.body.email, name: req.body.name });
+        
+        await user.delete();
+    
+        res.clearCookie("token");
+        
+        res.json("Usuário deletado com sucesso.")
+    }catch(err){
+        res.json("Usuário não pode ser deletado.")
+    }
+}
+
+exports.restoreUserADM = async (req, res) => {
+    try{        
+        const user = new User({ id: req.body.id, email: req.body.email, name: req.body.name });
+        
+        await user.restore();
+    
+        res.clearCookie("token");
+        
+        res.json("Usuário restaurado com sucesso.")
+    }catch(err){
+        res.json("Usuário não pode ser restaurado.")
+    }
+}
+
 exports.login = login;

@@ -476,6 +476,16 @@ class User {
   //   }
   // }
   }
+  async restore() {
+    const user = await UserModel.findOneAndUpdate(
+      { _id: this.body.id, email: this.body.email, name: this.body.name },
+      { $set: { is_banned: false } },
+      { new: true, fields: ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"] }
+    );
+  
+    return user;
+  }
+
 }
 
 module.exports = { User, UserModel };
