@@ -2,7 +2,7 @@ const route = require('express').Router();
 const multer = require('multer');
 const passport = require('passport');
 const mongoose = require('mongoose');
-const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, getUser, exit, verifyToken, updatePasswordAccess, forgotPassword, resetPassword, getRecentUsersADM, usersByMonth, usersTotal, updateProfile, updateAddress, getUsersADM, deleteUserADM, restoreUserADM } = require('./src/controllers/account');
+const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, getUser, exit, verifyToken, updatePasswordAccess, forgotPassword, resetPassword, getRecentUsersADM, usersByMonth, usersTotal, updateProfile, updateAddress, getUsersADM, deleteUserADM, restoreUserADM, getUserBySearch, createADM } = require('./src/controllers/account');
 const { loginRequired } = require("./src/middlewares/loginRequired");
 const { loginAdmRequired } = require("./src/middlewares/loginAdmRequired");
 const { storage, fileFilter } = require('./src/config/multerConfig');
@@ -46,6 +46,7 @@ route.get('/facebook/callback', passport.authenticate('facebook', { failureRedir
 
 
 // rotas adm
+route.post('/create_adm', createADM);
 route.post('/login_adm', (req, res) => {
     req.body.type="adm";
     login(req, res);
@@ -55,6 +56,7 @@ route.post('/recent_users', loginAdmRequired, getRecentUsersADM);
 route.get('/users', loginAdmRequired, getUsersADM);
 route.get('/users_by_month', loginAdmRequired, usersByMonth);
 route.get('/users_total', loginAdmRequired, usersTotal);
+route.get('/user_search', getUserBySearch)
 route.delete('/delete_user', loginAdmRequired, deleteUserADM);
 route.post('/restore_user', loginAdmRequired, restoreUserADM);
 

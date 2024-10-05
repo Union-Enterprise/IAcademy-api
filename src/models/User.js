@@ -462,7 +462,7 @@ class User {
 
     }
 
-    
+  
   //   try {
   //     const users = await UserModel.find({})
   //       .sort({ createdAt: -1 })
@@ -476,6 +476,37 @@ class User {
   //   }
   // }
   }
+
+  async getUsersBySearch(search){
+    try{
+      const regex = new RegExp(search, 'i');
+      const users = await UserModel.find({name: regex})
+      .select('name nickname email img is_adm is_premium is_banned');
+      return users;
+    } catch (error) {
+      console.log("Erro durante a busca", error);
+      this.errors.push("Erro durante a busca")
+      return;
+    }
+  }
+
+  async createADM(){
+    this.check('signup');
+    if (this.errors.length > 0) return;
+
+    if (await this.userAlreadyRegistered(this.body)) {
+      this.errors.push('Usuario já existe.');
+      return;
+    };
+
+    const salt = bcrypt.genSaltSync();
+    this.body.password = bcrypt.hashSync(this.body.password, salt);
+    this.body.is_adm = true;
+    this.body.is_premium = true;
+    this.user = await UserModel.create(this.body);
+    return this.user;
+  }
+
   async restore() {
     const user = await UserModel.findOneAndUpdate(
       { _id: this.body.id, email: this.body.email, name: this.body.name },

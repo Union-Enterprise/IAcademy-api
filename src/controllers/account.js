@@ -407,6 +407,14 @@ exports.getUsersADM = async (req, res) => {
     res.status(200).json(users);
 }
 
+exports.getUserBySearch = async (req, res) => {
+    const user = new User();
+    const search = req.body.name;
+
+    const users = await user.getUsersBySearch(search);
+    res.json(users);
+}
+
 exports.deleteUserADM = async (req, res) => {
     try{        
         const user = new User({ id: req.body.id, email: req.body.email, name: req.body.name });
@@ -432,6 +440,24 @@ exports.restoreUserADM = async (req, res) => {
         res.json("Usuário restaurado com sucesso.")
     }catch(err){
         res.json("Usuário não pode ser restaurado.")
+    }
+}
+
+exports.createADM = async (req, res) => {
+    try{    
+        req.body.nickname = req.body.name.replaceAll(" ", "");
+        req.body.nickname = req.body.nickname.toLowerCase();
+        const userModel = new User(req.body);
+        const user = await userModel.createADM();
+        if(userModel.errors.length > 0){
+            return res.json(userModel.errors);
+        }
+
+        const { id, name, email, img, links, is_adm } = user;
+
+        return res.json({ id, name, email, img, links, is_adm });
+    }catch(err){
+        console.log(err);
     }
 }
 
