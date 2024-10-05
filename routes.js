@@ -46,7 +46,7 @@ route.get('/facebook/callback', passport.authenticate('facebook', { failureRedir
 
 
 // rotas adm
-route.post('/create_adm', createADM);
+route.post('/create_adm', loginAdmRequired, createADM);
 route.post('/login_adm', (req, res) => {
     req.body.type="adm";
     login(req, res);
