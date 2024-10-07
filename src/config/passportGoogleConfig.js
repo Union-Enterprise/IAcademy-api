@@ -37,7 +37,7 @@ passport.use(new GoogleStrategy({
               subject: "Obrigado por criar sua conta com o Google - IAcademy"
             }, (err) => {
               if (err)
-                res.status(400).json({ message: err })
+                return;
             })
           }
         }
