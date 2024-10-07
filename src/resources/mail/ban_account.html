@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bem-vindo à IAcademy!</title>
+    <title>Conta Suspensa - IAcademy</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,7 +22,7 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         .header {
-            background-color: #1865F2;
+            background-color: #D9534F;
             padding: 20px;
             border-radius: 10px 10px 0 0;
             color: #fff;
@@ -41,7 +41,7 @@
         .cta-button {
             display: inline-block;
             padding: 10px 20px;
-            background-color: #1865F2;
+            background-color: #D9534F;
             color: #fff;
             text-decoration: none;
             border-radius: 5px;
@@ -59,23 +59,17 @@
 
     <div class="container">
         <div class="header">
-            <h1>Bem-vindo à IAcademy!</h1>
+            <h1>Conta Suspensa</h1>
         </div>
         <div class="content">
-            <p>Olá,</p>
-            <p>Você criou sua conta na <strong>IAcademy</strong> com sucesso utilizando sua conta {{provider}}!</p>
-            <p>A IAcademy está aqui para auxiliar estudantes com conteúdos direcionados em Matemática para o ENEM. Aqui, você poderá acessar:</p>
-            <ul>
-                <li>Resumos completos dos tópicos mais importantes de Matemática;</li>
-                <li>Exercícios resolvidos e detalhados;</li>
-                <li>Simulados que vão te ajudar a testar seus conhecimentos.</li>
-            </ul>
-            <p>Comece a aproveitar todos os nossos recursos e se prepare para o ENEM!</p>
-            <p>Para acessar sua conta, clique no botão abaixo:</p>
-            <a class="cta-button" href="http://localhost:3000/profile">Acessar minha conta</a>
+            <p>Olá, {{name}}</p>
+            <p>Infelizmente, sua conta na <strong>IAcademy</strong> foi suspensa devido a uma violação de nossas políticas de uso. Agradecemos sua compreensão enquanto analisamos a situação.</p>
+            <p>Para resolver essa questão, pedimos que entre em contato com nossa equipe de suporte através do link abaixo:</p>
+            <a class="cta-button" href="mailto:iacademy.support@gmail.com">Entrar em contato</a>
+            <p>Estamos aqui para ajudar e esclarecer qualquer dúvida que você possa ter.</p>
         </div>
         <div class="footer">
-            <p>Se precisar de ajuda, não hesite em <a href="mailto:suporte@iaacademy.com">entrar em contato conosco</a>.</p>
+            <p>Agradecemos sua compreensão.</p>
             <p>Equipe IAcademy</p>
         </div>
     </div>

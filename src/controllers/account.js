@@ -420,6 +420,18 @@ exports.deleteUserADM = async (req, res) => {
         const user = new User({ id: req.body.id, email: req.body.email, name: req.body.name });
         
         await user.delete();
+
+        mailer.sendMail({
+            to: email,
+            from: `IAcademy <${process.env.USER_EMAIL}>`,
+            template: 'ban_account',
+            context: { name: userData.name },
+            subject: "Sua conta foi suspensa - IAcademy"
+        }, (err) => {
+            if(err)
+                res.status(400).json({message: err})
+        })
+        res.json({ message: "Email enviado" })
     
         res.clearCookie("token");
         
