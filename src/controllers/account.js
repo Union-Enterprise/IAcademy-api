@@ -417,12 +417,12 @@ exports.getUserBySearch = async (req, res) => {
 
 exports.deleteUserADM = async (req, res) => {
     try{        
-        const user = new User({ id: req.body.id, email: req.body.email, name: req.body.name });
-        
-        await user.delete();
+        const user = new User({ email: req.body.email });
 
-        mailer.sendMail({
-            to: email,
+        const userData = await user.ban();
+
+        await mailer.sendMail({
+            to: userData.email,
             from: `IAcademy <${process.env.USER_EMAIL}>`,
             template: 'ban_account',
             context: { name: userData.name },
@@ -431,24 +431,31 @@ exports.deleteUserADM = async (req, res) => {
             if(err)
                 res.status(400).json({message: err})
         })
-        res.json({ message: "Email enviado" })
-    
-        res.clearCookie("token");
         
         res.json("Usuário deletado com sucesso.")
     }catch(err){
-        res.json("Usuário não pode ser deletado.")
+        console.log(err)
+        res.status(404).json("Usuário não pode ser deletado.")
     }
 }
 
 exports.restoreUserADM = async (req, res) => {
     try{        
-        const user = new User({ id: req.body.id, email: req.body.email, name: req.body.name });
+        const user = new User({ email: req.body.email });
         
-        await user.restore();
-    
-        res.clearCookie("token");
-        
+        const userData = await user.restore();
+
+        await mailer.sendMail({
+            to: userData.email,
+            from: `IAcademy <${process.env.USER_EMAIL}>`,
+            template: 'unban_account',
+            context: { name: userData.name },
+            subject: "Sua conta foi restaurada - IAcademy"
+        }, (err) => {
+            if(err)
+                res.status(400).json({message: err})
+        })
+            
         res.json("Usuário restaurado com sucesso.")
     }catch(err){
         res.json("Usuário não pode ser restaurado.")

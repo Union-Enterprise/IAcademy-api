@@ -524,11 +524,20 @@ class User {
 
   async restore() {
     const user = await UserModel.findOneAndUpdate(
-      { _id: this.body.id, email: this.body.email, name: this.body.name },
+      { email: this.body.email },
       { $set: { is_banned: false } },
       { new: true, fields: ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"] }
     );
   
+    return user;
+  }
+
+  async ban(){
+    const user = await UserModel.findOneAndUpdate(
+      { email: this.body.email },
+      { $set: { is_banned: true } },
+      { new: true, fields: ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"] }
+    );  
     return user;
   }
 
