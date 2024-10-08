@@ -507,6 +507,21 @@ class User {
     return this.user;
   }
 
+  async createUserAdmin(){
+    this.check('signup');
+    if (this.errors.length > 0) return;
+
+    if (await this.userAlreadyRegistered(this.body)) {
+      this.errors.push('Usuario já existe.');
+      return;
+    };
+
+    const salt = bcrypt.genSaltSync();
+    this.body.password = bcrypt.hashSync(this.body.password, salt);
+    this.user = await UserModel.create(this.body);
+    return this.user;
+  }
+
   async restore() {
     const user = await UserModel.findOneAndUpdate(
       { _id: this.body.id, email: this.body.email, name: this.body.name },

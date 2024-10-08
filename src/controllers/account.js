@@ -473,4 +473,22 @@ exports.createADM = async (req, res) => {
     }
 }
 
+exports.createUserAdmin = async (req, res) => {
+    try{    
+        req.body.nickname = req.body.name.replaceAll(" ", "");
+        req.body.nickname = req.body.nickname.toLowerCase()+"_"+new Date().getTime();
+        const userModel = new User(req.body);
+        const user = await userModel.createUserAdmin();
+        if(userModel.errors.length > 0){
+            return res.json(userModel.errors);
+        }
+
+        const { id, name, email, img, links, is_adm } = user;
+
+        return res.json({ id, name, email, img, links, is_adm });
+    }catch(err){
+        console.log(err);
+    }
+}
+
 exports.login = login;

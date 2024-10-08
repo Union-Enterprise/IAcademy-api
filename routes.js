@@ -2,7 +2,7 @@ const route = require('express').Router();
 const multer = require('multer');
 const passport = require('passport');
 const mongoose = require('mongoose');
-const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, getUser, exit, verifyToken, updatePasswordAccess, forgotPassword, resetPassword, getRecentUsersADM, usersByMonth, usersTotal, updateProfile, updateAddress, getUsersADM, deleteUserADM, restoreUserADM, getUserBySearch, createADM } = require('./src/controllers/account');
+const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, getUser, exit, verifyToken, updatePasswordAccess, forgotPassword, resetPassword, getRecentUsersADM, usersByMonth, usersTotal, updateProfile, updateAddress, getUsersADM, deleteUserADM, restoreUserADM, getUserBySearch, createADM, createUserAdmin } = require('./src/controllers/account');
 const { loginRequired } = require("./src/middlewares/loginRequired");
 const { loginAdmRequired } = require("./src/middlewares/loginAdmRequired");
 const { storage, fileFilter } = require('./src/config/multerConfig');
@@ -58,6 +58,7 @@ route.get('/facebook/callback', passport.authenticate('facebook', {
 
 // rotas adm
 route.post('/create_adm', loginAdmRequired, createADM);
+route.post('/create_user_adm', loginAdmRequired, createUserAdmin);
 route.post('/login_adm', (req, res) => {
     req.body.type = "adm";
     login(req, res);
