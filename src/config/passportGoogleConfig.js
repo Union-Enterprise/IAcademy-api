@@ -40,6 +40,8 @@ passport.use(new GoogleStrategy({
                 return;
             })
           }
+        }else{
+          UserModel.setIsNotFirstLogin(profile.emails[0].value);
         }
       }
 

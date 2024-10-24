@@ -9,7 +9,7 @@ exports.googleCallback = async (req, res, next) => {
           maxAge: 24 * 60 * 60 * 7000 
         });
 
-        res.redirect('http://localhost:3000/profile');
+        res.redirect('http://localhost:3000/student');
       } catch (err) {
         next(err);
       }

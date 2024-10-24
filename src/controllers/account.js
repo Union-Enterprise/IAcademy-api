@@ -14,7 +14,7 @@ const login = async (req, res) => {
         return res.status(401).json(login.errors)
     }
 
-    const { id, name, email, img, links, is_premium } = user;
+    const { id, name, email, img, links, is_premium, is_first_access } = user;
     const token = jwt.sign({ id }, process.env.TOKEN_SECRET, {
         expiresIn: process.env.TOKEN_EXPIRATION
     })
@@ -26,7 +26,7 @@ const login = async (req, res) => {
         maxAge: 24 * 60 * 60 * 7000 
     });
 
-    return res.json({ id, name, email, img, links, is_premium, token })
+    return res.json({ id, name, email, img, links, is_premium, token, is_first_access })
 }
 
 exports.register = async (req, res) => {
@@ -495,6 +495,18 @@ exports.createUserAdmin = async (req, res) => {
         return res.json({ id, name, email, img, links, is_adm });
     }catch(err){
         console.log(err);
+    }
+}
+
+exports.is_first_access = async (req, res) => {
+    try{
+        const id = req.body.id;
+        
+        const user = new User();
+
+        return user.is_first_access(id);
+    }catch(err){
+        console.log(err)
     }
 }
 

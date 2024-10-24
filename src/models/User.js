@@ -43,6 +43,8 @@ const UserSchema = new mongoose.Schema({
   passwordResetExpires: { type: Date, default: "" },
   is_adm: { type: Boolean, default: false },
   is_banned: { type: Boolean, default: false },
+  is_first_access: { type: Boolean, default: true },
+  roadmap: { type: Object, default: {"Nenhum roadmap por enquanto": "Espere enquanto a IA gera um para você"} }
 }, { timestamps: true })
 
 const UserModel = mongoose.model('User', UserSchema);
@@ -95,6 +97,10 @@ class User {
     return await UserModel.findOne({ email: this.body.email });
   }
 
+  async setIsNotFirstLogin(email){
+    await UserModel.updateOne({ email: email }, { $set: { is_first_access: false }});
+  }
+
   async login(type) {
     if (type !== 'auto') this.check();
 
@@ -113,6 +119,8 @@ class User {
         this.errors.push('O e-mail ou a senha está incorreto.');
         return;
       }
+
+      this.setIsNotFirstLogin(this.body.email);
       return this.user;
     } catch (err) {
       console.log(err);
@@ -539,6 +547,10 @@ class User {
       { new: true, fields: ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"] }
     );  
     return user;
+  }
+
+  async is_first_access(id){
+    return await UserModel.findOne({ _id: id }, ["is_first_access"]);
   }
 
 }
