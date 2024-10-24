@@ -4,6 +4,8 @@ const bcrypt = require('bcryptjs');
 
 const { validarCPF } = require('../modules/cpfVerify');
 
+const axios = require("axios")
+
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   nickname: { type: String, default: "", unique: true },
@@ -44,7 +46,8 @@ const UserSchema = new mongoose.Schema({
   is_adm: { type: Boolean, default: false },
   is_banned: { type: Boolean, default: false },
   is_first_access: { type: Boolean, default: true },
-  roadmap: { type: Object, default: {"Nenhum roadmap por enquanto": "Espere enquanto a IA gera um para você"} }
+  roadmap: { type: Object, default: {"Nenhum roadmap por enquanto": "Espere enquanto a IA gera um para você"} },
+  topics: { type: Object, default: {"Nenhum roadmap por enquanto": "Espere enquanto a IA gera um para você"} }
 }, { timestamps: true })
 
 const UserModel = mongoose.model('User', UserSchema);
@@ -103,29 +106,43 @@ class User {
 
   async login(type) {
     if (type !== 'auto') this.check();
-
+  
     if (this.errors.length > 0) return;
     try {
       this.user = await UserModel.findOne({ email: this.body.email });
-
+  
       if (this.user === null) {
         this.errors.push('O e-mail ou a senha está incorreto.');
         return;
       }
-      if ((!this.user.is_adm && this.body.type == "adm") || (this.user.is_adm && !this.body.type)
-        || (!this.user)
-        || (!bcrypt.compareSync(this.body.password, this.user.password) && this.body.password !== this.user.password)
-        || this.user.is_banned) {
+  
+      if (
+        (!this.user.is_adm && this.body.type == "adm") ||
+        (this.user.is_adm && !this.body.type) ||
+        (!this.user) ||
+        (!bcrypt.compareSync(this.body.password, this.user.password) && this.body.password !== this.user.password) ||
+        this.user.is_banned
+      ) {
         this.errors.push('O e-mail ou a senha está incorreto.');
         return;
       }
-
+  
       this.setIsNotFirstLogin(this.body.email);
+  
+      axios.post("http://localhost:5000/generate_content_and_roadmap", { id: this.user._id })
+        .then(() => {
+          console.log("Requisição enviada com sucesso.");
+        })
+        .catch((err) => {
+          console.log("Erro ao enviar requisição:", err);
+        });
+
       return this.user;
     } catch (err) {
       console.log(err);
     }
   }
+  
 
   async comparePassword(oldPassword) {
     this.user = await UserModel.findOne({ _id: this.body.id }, ["password"])

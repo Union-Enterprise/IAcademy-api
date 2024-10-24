@@ -73,11 +73,12 @@ route.delete('/delete_user', loginAdmRequired, deleteUserADM);
 route.post('/restore_user', loginAdmRequired, restoreUserADM);
 
 // ia
-route.get('/roadmap', async (req, res) => {
+route.post('/roadmap', async (req, res) => {
     try {
         const db = mongoose.connection.db;
-        const collection = db.collection('roadmap');
-        const dados = await collection.find({}).toArray();
+        const collection = db.collection('users');
+        console.log(req.body)
+        const dados = await collection.find({ email: req.body.email }).toArray();
         res.status(200).json(dados);
     } catch (error) {
         console.log(error);
