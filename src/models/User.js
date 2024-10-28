@@ -127,16 +127,17 @@ class User {
         return;
       }
   
-      this.setIsNotFirstLogin(this.body.email);
-  
-      axios.post("http://localhost:5000/generate_content_and_roadmap", { id: this.user._id })
+      if(this.user.is_first_access && !this.user.is_adm){
+        axios.post("http://localhost:5000/generate_content_and_roadmap", { id: this.user._id })
         .then(() => {
           console.log("Requisição enviada com sucesso.");
         })
         .catch((err) => {
           console.log("Erro ao enviar requisição:", err);
         });
+      }
 
+      this.setIsNotFirstLogin(this.body.email);
       return this.user;
     } catch (err) {
       console.log(err);
