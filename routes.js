@@ -3,6 +3,8 @@ const multer = require('multer');
 const passport = require('passport');
 const mongoose = require('mongoose');
 const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, getUser, exit, verifyToken, updatePasswordAccess, forgotPassword, resetPassword, getRecentUsersADM, usersByMonth, usersTotal, updateProfile, updateAddress, getUsersADM, deleteUserADM, restoreUserADM, getUserBySearch, createADM, createUserAdmin } = require('./src/controllers/account');
+const { createQuiz, deleteQuiz, getAllQuizzes, getQuizById, updateQuiz } = require('./src/controllers/initialquiz');
+
 const { loginRequired } = require("./src/middlewares/loginRequired");
 const { loginAdmRequired } = require("./src/middlewares/loginAdmRequired");
 const { storage, fileFilter } = require('./src/config/multerConfig');
@@ -159,6 +161,12 @@ route.post('/question', async (req, res) => {
         res.status(500).json({ message: 'Erro ao criar a questão', error });
     }
 });
+
+route.post('/quiz', createQuiz);
+route.get('/quizzes', getAllQuizzes);
+route.get('/quiz/:id', getQuizById);
+route.put('/quiz/:id', updateQuiz);
+route.delete('/quiz/:id', deleteQuiz);
 
 
 module.exports = route;
