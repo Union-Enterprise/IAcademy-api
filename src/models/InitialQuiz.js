@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
-const UserSchema = new mongoose.Schema({
+const QuizSchema = new mongoose.Schema({
     titulo: { type: String, required: true },
     questao: { type: String, required: true },
     tema: { type: String, required: true },
   }, { timestamps: true })
   
-const QuizModel = mongoose.model('InitialQuiz', UserSchema);
+const QuizModel = mongoose.model('InitialQuiz', QuizSchema);
 
 class InitialQuiz {
     constructor(body) {
@@ -77,4 +77,4 @@ class InitialQuiz {
     }
 }
 
-module.exports = InitialQuiz;
+module.exports = { InitialQuiz, QuizModel};
