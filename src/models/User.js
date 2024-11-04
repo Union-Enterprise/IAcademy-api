@@ -463,9 +463,9 @@ class User {
   };
 
 
-  async getUsersADM(category, plan, status) {
+  async getUsersADM(category, plan, status, nameRegex) {
     let filter = {};
-
+    
     if (category) {
       filter.is_adm = category === "admin";
     }
@@ -474,6 +474,9 @@ class User {
     }
     if (status) {
       filter.is_banned = status === "sus";
+    }
+    if (nameRegex) {
+      filter.name = {$regex: nameRegex, $options: "i"}
     }
   
     try {
