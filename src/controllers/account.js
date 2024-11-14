@@ -510,4 +510,15 @@ exports.is_first_access = async (req, res) => {
     }
 }
 
+exports.createRoadmap = async (req, res) => {
+    console.log('create roadmap')
+    try{
+        const user = new User();
+
+        await user.generateRoadmap(req.userId);
+    }catch(err){
+        console.log(err)
+    }
+}
+
 exports.login = login;

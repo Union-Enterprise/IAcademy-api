@@ -2,8 +2,8 @@ const route = require('express').Router();
 const multer = require('multer');
 const passport = require('passport');
 const mongoose = require('mongoose');
-const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, getUser, exit, verifyToken, updatePasswordAccess, forgotPassword, resetPassword, getRecentUsersADM, usersByMonth, usersTotal, updateProfile, updateAddress, getUsersADM, deleteUserADM, restoreUserADM, getUserBySearch, createADM, createUserAdmin } = require('./src/controllers/account');
-const { createQuiz, deleteQuiz, getAllQuizzes, getQuizById, updateQuiz } = require('./src/controllers/initialquiz');
+const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, getUser, exit, verifyToken, updatePasswordAccess, forgotPassword, resetPassword, getRecentUsersADM, usersByMonth, usersTotal, updateProfile, updateAddress, getUsersADM, deleteUserADM, restoreUserADM, getUserBySearch, createADM, createUserAdmin, createRoadmap } = require('./src/controllers/account');
+const { createQuiz, deleteQuiz, getAllQuizzes, getQuizById, updateQuiz, registerInUser } = require('./src/controllers/initialquiz');
 const { sendReport } = require('./src/controllers/report');
 
 const { loginRequired } = require("./src/middlewares/loginRequired");
@@ -171,5 +171,7 @@ route.put('/quiz/:id', updateQuiz);
 route.delete('/quiz/:id', deleteQuiz);
 
 route.post('/report', sendReport);
+
+route.post('/quiz/register/user', loginRequired, registerInUser, createRoadmap);
 
 module.exports = route;

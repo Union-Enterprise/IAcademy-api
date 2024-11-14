@@ -47,7 +47,8 @@ const UserSchema = new mongoose.Schema({
   is_banned: { type: Boolean, default: false },
   is_first_access: { type: Boolean, default: true },
   roadmap: { type: Object, default: {"Nenhum roadmap por enquanto": "Espere enquanto a IA gera um para você"} },
-  topics: { type: Object, default: {"Nenhum roadmap por enquanto": "Espere enquanto a IA gera um para você"} }
+  topics: { type: Object, default: {"Nenhum roadmap por enquanto": "Espere enquanto a IA gera um para você"} },
+  quiz_iniciais: { type: Object, default: {"Nenhuma questão respondida": "Nenhuma questão respondida"} }
 }, { timestamps: true })
 
 const UserModel = mongoose.model('User', UserSchema);
@@ -126,22 +127,30 @@ class User {
         this.errors.push('O e-mail ou a senha está incorreto.');
         return;
       }
-  
+
+      // this.setIsNotFirstLogin(this.body.email);
+      return this.user;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async generateRoadmap(id){
+      this.user = await UserModel.findOne({ _id: id });
+
+      console.log(this.user.email)
+
       if(this.user.is_first_access && !this.user.is_adm){
-        axios.post("http://localhost:5000/generate_content_and_roadmap", { id: this.user._id })
+        axios.post("http://localhost:5000/generate_content_and_roadmap", { id: id })
         .then(() => {
           console.log("Requisição enviada com sucesso.");
+
+          this.setIsNotFirstLogin(this.user.email);
         })
         .catch((err) => {
           console.log("Erro ao enviar requisição:", err);
         });
       }
-
-      this.setIsNotFirstLogin(this.body.email);
-      return this.user;
-    } catch (err) {
-      console.log(err);
-    }
   }
   
 
@@ -572,6 +581,17 @@ class User {
 
   async is_first_access(id){
     return await UserModel.findOne({ _id: id }, ["is_first_access"]);
+  }
+
+  async setInitialQuiz(quiz){
+    // console.log(this.body)
+    const user = await UserModel.findOneAndUpdate(
+      { _id: this.body },
+      { $set: { quiz_iniciais: quiz } },
+      { new: true, fields: ["name", "nickname", "nascimento", "email", "img", "cpf", "links", "is_premium", "createdAt"] }
+    );
+
+    return user;
   }
 
 }

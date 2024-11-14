@@ -4,6 +4,8 @@ const QuizSchema = new mongoose.Schema({
     titulo: { type: String, required: true },
     questao: { type: String, required: true },
     tema: { type: String, required: true },
+    alternativas: { type: [String], required: true },
+    resposta: { type: String, required: true }
   }, { timestamps: true })
   
 const QuizModel = mongoose.model('InitialQuiz', QuizSchema);

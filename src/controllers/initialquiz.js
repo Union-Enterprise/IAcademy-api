@@ -1,4 +1,5 @@
 const { InitialQuiz } = require('../models/InitialQuiz');
+const { User } = require('../models/User')
 
 exports.createQuiz = async (req, res) => {
     try {
@@ -80,3 +81,14 @@ exports.deleteQuiz = async (req, res) => {
     }
 };
 
+exports.registerInUser = async (req, res, next) => {
+    try{
+        const user = await new User(req.userId, req.userEmail);
+        console.log(await user.setInitialQuiz(req.body.quiz));
+
+        next();
+    }catch(err){
+        console.log(err);
+        res.status(500).json({ message: "Erro ao setar o quiz para usuário" }); 
+    }
+}
