@@ -31,6 +31,7 @@ const UserSchema = new mongoose.Schema({
   numero: { type: String, default: "" },
   complemento: { type: String, default: "" },
   estado: { type: String, default: "" },
+  streak: {type: Number, default: 0},
   cartoes: {
     type: Map,
     of: String,
