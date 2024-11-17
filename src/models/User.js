@@ -32,6 +32,7 @@ const UserSchema = new mongoose.Schema({
   complemento: { type: String, default: "" },
   estado: { type: String, default: "" },
   streak: {type: Number, default: 0},
+  lastStreak: {type: Date, default: null},
   cartoes: {
     type: Map,
     of: String,
@@ -294,8 +295,42 @@ class User {
     return user;
   }
 
+  async updateStreak() {
+    let user = await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "email", "googleId", "nascimento", "telefone", "img", "cpf", "genero", "links", "is_premium", "streak", "lastStreak", "is_adm", "createdAt"]);
+    
+    const currentDate = new Date();
+    const lastStreakDate = user.lastStreak;
+  
+    if (user.streak === undefined || user.streak === null) {
+      user.streak = 0;
+    }
+    if (user.lastStreak === undefined || user.lastStreak === null) {
+      user.lastStreak = null;
+    }
+  
+    if (!lastStreakDate) {
+      user.streak = 1;
+      user.lastStreak = currentDate;
+    } else {
+      const dia = 24 * 60 * 60 * 1000;
+      const diferenca = currentDate - lastStreakDate;
+  
+      if (diferenca > dia && diferenca < dia * 2) {
+        user.streak += 1;
+        user.lastStreak = currentDate;
+      } else if (diferenca > 2 * dia) {
+        user.streak = 1;
+        user.lastStreak = currentDate;
+      }
+    }
+
+    await UserModel.findOneAndUpdate({ _id: this.body.id }, { streak: user.streak, lastStreak: user.lastStreak });
+  
+    return user;
+  }
+
   async getUser() {
-    return await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "email", "googleId", "nascimento", "telefone", "img", "cpf", "genero", "links", "is_premium", "cep", "rua", "bairro", "cidade", "numero", "complemento", "estado", "is_adm", "createdAt"]);
+    return await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "email", "googleId", "nascimento", "telefone", "img", "cpf", "genero", "links", "is_premium", "cep", "rua", "bairro", "cidade", "numero", "complemento", "estado", "streak", "lastStreak", "is_adm", "createdAt"]);
   }
 
   async forgotPassword(email, token, now) {

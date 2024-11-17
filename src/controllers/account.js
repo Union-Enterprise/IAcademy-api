@@ -232,6 +232,26 @@ exports.updateIMG = async (req, res) => {
     }
 }
 
+exports.updateStreak = async (req, res) => {
+    try{
+        const userId = req.body.userId || req.userId;
+        if (!userId) {
+            return res.status(400).json({ message: "User ID is missing" });
+          }
+        const user = new User({id: userId})
+        const userUpdated = await user.updateStreak()
+        if(user.errors.length >0){
+            return res.json(user.errors);
+        }
+        res.json(userUpdated.streak)
+    }catch(err){
+        console.log(err)
+        res.json({
+            message: "Erro ao verificar streak"+err
+        })
+    }
+}
+
 exports.getUser = async (req, res) => {
     try{
         const user = new User({ id: req.userId })
