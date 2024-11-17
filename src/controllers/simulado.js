@@ -15,3 +15,16 @@ exports.createSimulado = async (req, res) => {
         res.status(500).json({ message: "Erro ao cadastrar o simulado!" });
     }
 };
+
+exports.getAllSimulados = async (req, res) => {
+    try {
+        const simulado = new Simulado(req.body);
+        const allSimulados = await simulado.getAllSimulados()
+        console.log(allSimulados)
+
+        return res.status(201).json(allSimulados);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Erro ao cadastrar o simulado!" });
+    }
+};

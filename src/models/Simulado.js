@@ -64,6 +64,10 @@ class Simulado {
             return;
         }
     }
+
+    async getAllSimulados(){
+      return SimuladoModel.find({});
+    }
 }
 
 module.exports = {Simulado, SimuladoModel};
