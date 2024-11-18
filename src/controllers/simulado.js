@@ -42,3 +42,34 @@ exports.getSimulado = async (req, res) => {
         res.status(500).json({message: "Erro ao encontrar simulado"});
     }
 };
+
+exports.getProva = async (req, res) => {
+    try{
+        const {id, index} = req.params;
+        const simulado = new Simulado({id: id});
+        const result = await simulado.getSimulado()
+        if (simulado.errors.length>0){
+            return res.json(errors);
+        }
+        return res.json(result.provas[index]);
+    }catch (err){
+        console.log(err);
+        res.status(500).json({message: "Erro ao encontrar simulado"});
+    }
+};
+
+exports.getQuestao = async (req, res) => {
+    try{
+        const {id, index, question} = req.params;
+        const simulado = new Simulado({id: id});
+        const result = await simulado.getSimulado()
+        if (simulado.errors.length>0){
+            return res.json(errors);
+        }
+        const provas = result.provas[index]
+        return res.json(provas.questoes[question]);
+    }catch (err){
+        console.log(err);
+        res.status(500).json({message: "Erro ao encontrar simulado"});
+    }
+};
