@@ -28,3 +28,17 @@ exports.getAllSimulados = async (req, res) => {
         res.status(500).json({ message: "Erro ao cadastrar o simulado!" });
     }
 };
+
+exports.getSimulado = async (req, res) => {
+    try{
+        const simulado = new Simulado({id: req.params.id});
+        const result = await simulado.getSimulado()
+        if (simulado.errors.length>0){
+            return res.json(errors);
+        }
+        return res.json(result);
+    }catch (err){
+        console.log(err);
+        res.status(500).json({message: "Erro ao encontrar simulado"});
+    }
+};

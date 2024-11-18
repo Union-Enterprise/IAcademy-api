@@ -68,6 +68,10 @@ class Simulado {
     async getAllSimulados(){
       return SimuladoModel.find({});
     }
+
+    async getSimulado(){
+      return SimuladoModel.findOne({ _id: this.body.id});
+    }
 }
 
 module.exports = {Simulado, SimuladoModel};
