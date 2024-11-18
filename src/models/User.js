@@ -41,21 +41,22 @@ const UserSchema = new mongoose.Schema({
     Texto: {type: Number, default: 0},
     Teoria: {type: Number, default: 0},
   },
-  resultados: [{simulado: {
-    type: String,
-  },
-  prova: {
-    type: String,
-  },
-  respostas:{
-    type: [String]
-  }, 
-  gabarito:{
-    type: [String]
-  },
-  acertos:{
-    type: Number
-  }}],
+  resultados: [{
+    simulado: {
+      type: String,
+    },
+    prova: {
+      type: String,
+    },
+    respostas:{
+      type: [String]
+    }, 
+    gabarito:{
+      type: [String]
+    },
+    acertos:{
+      type: Number
+    }}],
   cartoes: {
     type: Map,
     of: String,
@@ -688,7 +689,22 @@ class User {
   
     return updatedUser;
   }
-  
+
+  async getResultado(simuladoId, provaIndex){
+    try{
+      const user = await UserModel.findById(this.body.id);
+      const result = user.resultados.find(
+        (resultado) =>
+          resultado.simulado === simuladoId && resultado.prova === provaIndex
+      );
+
+      return result;
+    }catch(error){
+      console.log("erro na busca", error);
+      this.errors.push("erro ao buscar resultado");
+      return;
+    }
+  }
 }
 
 module.exports = { User, UserModel };
