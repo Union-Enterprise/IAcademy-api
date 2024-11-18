@@ -541,4 +541,29 @@ exports.createRoadmap = async (req, res) => {
     }
 }
 
+exports.finishTest = async (req, res) => {
+    try {
+      const user = new User({ id: req.userId, skills: req.body.skills, resultados: req.body.resultados });
+  
+      userUpdated = await user.finishProva();
+  
+      if (user.errors.length > 0) {
+        return res.status(400).json({ errors: user.errors });
+      }
+  
+      if (!userUpdated) {
+        return res.status(404).json({ error: "Usuario nao encontrado" });
+      }
+  
+      res.json({
+        message: "Prova finalizada com sucesso.",
+        user: userUpdated,
+      });
+    } catch (err) {
+      console.error("Erro ao finalizar prova:", err);
+      res.status(500).json({ error: "Prova nao pode ser finalizada." });
+    }
+  };
+  
+
 exports.login = login;

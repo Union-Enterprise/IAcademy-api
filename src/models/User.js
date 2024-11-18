@@ -33,6 +33,29 @@ const UserSchema = new mongoose.Schema({
   estado: { type: String, default: "" },
   streak: {type: Number, default: 0},
   lastStreak: {type: Date, default: null},
+  skills: {
+    Raciocinio: {type: Number, default: 0},
+    Criatividade: {type: Number, default: 0},
+    Calculos: {type: Number, default: 0},
+    Conhecimento: {type: Number, default: 0},
+    Texto: {type: Number, default: 0},
+    Teoria: {type: Number, default: 0},
+  },
+  resultados: [{simulado: {
+    type: String,
+  },
+  prova: {
+    type: String,
+  },
+  respostas:{
+    type: [String]
+  }, 
+  gabarito:{
+    type: [String]
+  },
+  acertos:{
+    type: Number
+  }}],
   cartoes: {
     type: Map,
     of: String,
@@ -330,7 +353,7 @@ class User {
   }
 
   async getUser() {
-    return await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "email", "googleId", "nascimento", "telefone", "img", "cpf", "genero", "links", "is_premium", "cep", "rua", "bairro", "cidade", "numero", "complemento", "estado", "streak", "lastStreak", "is_adm", "createdAt"]);
+    return await UserModel.findOne({ _id: this.body.id }, ["name", "nickname", "email", "googleId", "nascimento", "telefone", "img", "cpf", "genero", "links", "is_premium", "cep", "rua", "bairro", "cidade", "numero", "complemento", "estado", "streak", "lastStreak", "skills", "is_adm", "createdAt"]);
   }
 
   async forgotPassword(email, token, now) {
@@ -630,6 +653,42 @@ class User {
     return user;
   }
 
+  async finishProva() {
+
+  
+    const incrementFields = {};
+    for (const [key, value] of Object.entries(this.body.skills)) {
+      if (typeof value === 'number') {
+        incrementFields[`skills.${key}`] = value;
+      }
+    }
+
+  
+    const user = await UserModel.findOne({ _id: this.body.id });
+  
+    if (!Array.isArray(user.resultados)) {
+      user.resultados = [];
+    }
+  
+    user.resultados.push(this.body.resultados);
+
+    await UserModel.updateOne(
+      { _id: this.body.id },
+      {
+        $inc: incrementFields,
+        $set: { resultados: user.resultados }, 
+      }
+    );
+  
+
+    const updatedUser = await UserModel.findOne(
+      { _id: this.body.id },
+      ["name", "skills", "resultados"]
+    );
+  
+    return updatedUser;
+  }
+  
 }
 
 module.exports = { User, UserModel };
