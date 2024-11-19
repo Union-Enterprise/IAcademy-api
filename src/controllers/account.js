@@ -579,4 +579,19 @@ exports.getResult = async (req, res) => {
     }  
 }
 
+exports.getAllProvas = async (req, res) => {
+    const { userId, simuladoId } = req.params;
+    const user = new User({ id: userId });
+    const result = await user.getAllProvas(simuladoId);
+    if (user.errors.length > 0) {
+        return res.status(400).json({ errors: user.errors });
+    }
+    if (result) {
+        return res.status(200).json(result);
+    } else {
+        return res.status(404).json({ message: "Resultado não encontrado" });
+    }  
+}
+
+
 exports.login = login;

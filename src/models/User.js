@@ -705,6 +705,22 @@ class User {
       return;
     }
   }
+
+  async getAllProvas(simuladoId){
+    try{
+      const user = await UserModel.findById(this.body.id);
+      const result = user.resultados.filter(
+        (resultado) =>
+          resultado.simulado === simuladoId
+      );
+
+      return result;
+    }catch(error){
+      console.log("erro na busca", error);
+      this.errors.push("erro ao buscar resultado");
+      return;
+    }
+  }
 }
 
 module.exports = { User, UserModel };
