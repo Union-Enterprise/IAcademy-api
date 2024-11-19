@@ -8,13 +8,13 @@ const questaoSchema = new mongoose.Schema({
     type: String
   },
   alternativas: {
-    type: [String] 
+    type: [String]
   },
   alternativaCorreta: {
-    type: String 
+    type: String
   },
   explicacao: {
-    type: String 
+    type: String
   },
   habilidade: {
     type: String
@@ -29,19 +29,19 @@ const provaSchema = new mongoose.Schema({
     type: String
   },
   desc: {
-    type: String 
+    type: String
   },
-  questoes: [questaoSchema] 
+  questoes: [questaoSchema]
 });
 
 const simuladoSchema = new mongoose.Schema({
   titulo: {
-    type: String, 
+    type: String,
     default: ""
   },
   desc: {
     type: String,
-    default: "" 
+    default: ""
   },
   provas: [provaSchema]
 });
@@ -49,29 +49,94 @@ const simuladoSchema = new mongoose.Schema({
 const SimuladoModel = mongoose.model('Simulado', simuladoSchema)
 
 class Simulado {
-    constructor(body) {
-        this.body = body;
-        this.simulado = null;
-        this.errors = [];
-    }
+  constructor(body) {
+    this.body = body;
+    this.simulado = null;
+    this.errors = [];
+  }
 
-    async createSimulado(){
-        try {
-            this.simulado = await SimuladoModel.create(this.body);
-            return this.simulado;
-        } catch (err) {
-            this.errors.push("Erro na criação de simulado.");
-            return;
+  async createSimulado() {
+    try {
+      this.simulado = await SimuladoModel.create(this.body);
+      return this.simulado;
+    } catch (err) {
+      this.errors.push("Erro na criação de simulado.");
+      return;
+    }
+  }
+
+  async getAllSimulados() {
+    return SimuladoModel.find({});
+  }
+
+  async getSimulado() {
+    return SimuladoModel.findOne({ _id: this.body.id });
+  }
+
+  async delSimulado() {
+    return SimuladoModel.deleteOne({ _id: this.body.id });
+  }
+
+  async delProva() {
+    try {
+      const simulado = await SimuladoModel.findById(this.body.id);
+
+      if (!simulado) {
+        this.errors.push("Simulado não encontrado.");
+        return null;
+      }
+
+      if (this.body.index < 0 || this.body.index >= simulado.provas.length) {
+        this.errors.push("Índice inválido.");
+        return null;
+      }
+
+      simulado.provas.splice(this.body.index, 1);
+
+      await simulado.save();
+
+      return simulado;
+    } catch (err) {
+      this.errors.push("Erro ao deletar a prova.");
+      console.error(err);
+      return null;
+    }
+  }
+
+  async delQuestao() {
+    try {
+        const simulado = await SimuladoModel.findById(this.body.id);
+
+        if (!simulado) {
+            this.errors.push("Simulado não encontrado.");
+            return null;
         }
-    }
 
-    async getAllSimulados(){
-      return SimuladoModel.find({});
-    }
+        if (this.body.index < 0 || this.body.index >= simulado.provas.length) {
+            this.errors.push("Índice de prova inválido.");
+            return null;
+        }
 
-    async getSimulado(){
-      return SimuladoModel.findOne({ _id: this.body.id});
+        const prova = simulado.provas[this.body.index];
+
+        if (this.body.question < 0 || this.body.question >= prova.questoes.length) {
+            this.errors.push("Índice de questão inválido.");
+            return null;
+        }
+
+        prova.questoes.splice(this.body.question, 1);
+
+        await simulado.save();
+
+        return simulado;
+    } catch (err) {
+        this.errors.push("Erro ao deletar a questão.");
+        console.error(err);
+        return null;
     }
 }
 
-module.exports = {Simulado, SimuladoModel};
+
+}
+
+module.exports = { Simulado, SimuladoModel };

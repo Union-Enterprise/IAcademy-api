@@ -73,3 +73,39 @@ exports.getQuestao = async (req, res) => {
         res.status(500).json({message: "Erro ao encontrar simulado"});
     }
 };
+
+exports.deleteSimulado = async (req, res) => {
+    try{
+        const simulado = new Simulado({id: req.params.id});
+        const result = await simulado.delSimulado();
+        if (simulado.errors.length>0){
+            return res.json(errors);
+        }
+        return res.json(result);
+    }catch(err){
+        console.log(err);
+        res.status(500).json({message: "Erro ao deletar simulado"});
+    }
+}
+
+exports.deleteProva = async (req, res) => {
+    try{
+        const simulado = new Simulado({id: req.params.id, index: req.params.index});
+        const result = await simulado.delProva();
+        return res.json(result);
+    }catch(err){
+        console.log(err);
+        res.status(500).json({message: "Erro ao deletar simulado"});
+    }
+}
+
+exports.deleteQuestao = async (req, res) => {
+    try{
+        const simulado = new Simulado({id: req.params.id, index: req.params.index, question: req.params.question});
+        const result = await simulado.delQuestao();
+        return res.json(result);
+    }catch(err){
+        console.log(err);
+        res.status(500).json({message: "Erro ao deletar simulado"});
+    }
+}
