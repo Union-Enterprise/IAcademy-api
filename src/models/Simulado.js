@@ -7,10 +7,13 @@ const questaoSchema = new mongoose.Schema({
   enunciado: {
     type: String
   },
+  imagem: {
+    type: String
+  },
   alternativas: {
     type: [String]
   },
-  alternativaCorreta: {
+  alternativa_correta: {
     type: String
   },
   explicacao: {
@@ -134,9 +137,92 @@ class Simulado {
         console.error(err);
         return null;
     }
+  }
+
+  async createProva(body) {
+    try {
+        const simulado = await SimuladoModel.findById(this.body.id);
+
+        if (!simulado) {
+            this.errors.push("Simulado não encontrado.");
+            return null;
+        }
+
+        const novaProva = {
+            titulo: body.titulo,  
+            tema: body.tema,     
+            desc: body.desc, 
+            questoes: body.questoes,
+        };
+
+        simulado.provas.push(novaProva);
+
+        await simulado.save();
+
+        return simulado;
+    } catch (err) {
+        this.errors.push("Erro ao criar a prova.");
+        console.error(err);
+        return null;
+    }
+  }
+
+  async createQuestion(body) {
+    try {
+        const simulado = await SimuladoModel.findById(this.body.id);
+
+        if (!simulado) {
+            this.errors.push("Simulado não encontrado.");
+            return null;
+        }
+
+        if (this.body.index < 0 || this.body.index >= simulado.provas.length) {
+            this.errors.push("Índice de prova inválido.");
+            return null;
+        }
+
+        const prova = simulado.provas[this.body.index];
+
+        body = body.updatedQuestion
+        const novaQuestao = {
+            titulo: body.titulo,
+            enunciado: body.enunciado,
+            tema: body.tema,
+            alternativaCorreta: body.alternativas[body.alternativaCorreta],
+            alternativas: body.alternativas,
+            imagem: body.imagem || null,
+        };
+
+        prova.questoes.push(novaQuestao);
+        const index = prova.questoes.findIndex(questao => questao.titulo === novaQuestao.titulo);
+
+        await simulado.save();
+
+        return index;
+    } catch (err) {
+        this.errors.push("Erro ao criar a questão.");
+        console.error(err);
+        return null;
+    }
 }
 
 
+  async imageUploadQuestion(filename){
+    console.log(filename)
+    const simulado = await SimuladoModel.findById(this.body.id);
+
+    const prova = simulado.provas[this.body.index];
+
+    const questao = prova.questoes[this.body.question]
+
+    questao.imagem = filename;
+
+    await simulado.save();
+
+    console.log(questao)
+    return simulado;
+
+  }
 }
 
 module.exports = { Simulado, SimuladoModel };

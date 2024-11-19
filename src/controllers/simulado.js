@@ -109,3 +109,37 @@ exports.deleteQuestao = async (req, res) => {
         res.status(500).json({message: "Erro ao deletar simulado"});
     }
 }
+
+exports.createProva = async (req, res) => {
+    try{
+        const simulado = new Simulado({id: req.params.id});
+        const result = await simulado.createProva(req.body);
+        return res.json(result);
+    }catch(err){
+        console.log(err);
+        res.status(500).json({message: "Erro ao deletar simulado"});
+    }
+}
+
+exports.createQuestion = async (req, res) => {
+    try{
+        const simulado = new Simulado({id: req.params.id, index: req.params.index});
+        const result = await simulado.createQuestion(req.body);
+        return res.json(result);
+    }catch(err){
+        console.log(err);
+        res.status(500).json({message: "Erro ao criar simulado"});
+    }
+}
+
+exports.uploadQuestionImage = async (req, res) => {
+    try{
+        console.log(req.body)
+        const simulado = new Simulado({id: req.params.id, index: req.params.index, question: req.params.question});
+        const result = await simulado.imageUploadQuestion(req.file.filename);
+        return res.json(result);
+    }catch(err){
+        console.log(err);
+        res.status(500).json({message: "Fazer upload de imagem do simulado"});
+    }
+}
