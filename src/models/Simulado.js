@@ -188,7 +188,7 @@ class Simulado {
             titulo: body.titulo,
             enunciado: body.enunciado,
             tema: body.tema,
-            alternativaCorreta: body.alternativas[body.alternativaCorreta],
+            alternativa_correta: body.alternativa_correta,
             alternativas: body.alternativas,
             imagem: body.imagem || null,
         };

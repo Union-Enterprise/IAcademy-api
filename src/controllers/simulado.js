@@ -122,6 +122,7 @@ exports.createProva = async (req, res) => {
 }
 
 exports.createQuestion = async (req, res) => {
+    console.log(req.body)
     try{
         const simulado = new Simulado({id: req.params.id, index: req.params.index});
         const result = await simulado.createQuestion(req.body);
