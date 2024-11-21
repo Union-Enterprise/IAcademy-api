@@ -4,7 +4,7 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const { login, register, del, updateName, updateEmail, updatePassword, updateCPF, updateIMG, updateStreak, getUser, exit, verifyToken, updatePasswordAccess, forgotPassword, resetPassword, getRecentUsersADM, usersByMonth, usersTotal, updateProfile, updateAddress, getUsersADM, deleteUserADM, restoreUserADM, getUserBySearch, createADM, createUserAdmin, createRoadmap, finishTest, getResult, getAllProvas } = require('./src/controllers/account');
 const { createQuiz, deleteQuiz, getAllQuizzes, getQuizById, updateQuiz, registerInUser } = require('./src/controllers/initialquiz');
-const { sendReport } = require('./src/controllers/report');
+const { sendReport, getReports, totalReports, solveReport, unsolveReport } = require('./src/controllers/report');
 const { createSimulado, getAllSimulados, getSimulado, getProva, getQuestao, deleteSimulado, deleteProva, deleteQuestao, createProva, createQuestion, uploadQuestionImage } = require('./src/controllers/simulado')
 
 const { loginRequired } = require("./src/middlewares/loginRequired");
@@ -177,6 +177,10 @@ route.put('/quiz/:id', updateQuiz);
 route.delete('/quiz/:id', deleteQuiz);
 
 route.post('/report', sendReport);
+route.get('/reports', getReports);
+route.get('/total_reports', totalReports);
+route.put('/solve', solveReport);
+route.put('/unsolve', unsolveReport);
 
 route.post('/simulado', createSimulado);
 route.post('/simulado/:id', createProva);
